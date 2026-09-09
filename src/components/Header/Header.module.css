@@ -1,0 +1,38 @@
+.header {
+  height: 72px;
+  background: #0f0f10;
+  border-bottom: 1px solid #2b2b2b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: relative;
+  z-index: 50;
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brandBlock strong {
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+
+.brandBlock span {
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+.headerUser {
+  font-size: 14px;
+  color: #d6d6d6;
+}
+
+@media (max-width: 900px) {
+  .header {
+    padding: 0 14px;
+  }
+}

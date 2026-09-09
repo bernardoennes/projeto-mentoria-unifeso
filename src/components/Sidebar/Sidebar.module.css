@@ -1,0 +1,39 @@
+.sideNav {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  width: 72px;
+  background: #f1f1f1;
+  border-radius: 18px;
+  padding: 14px 10px;
+  transition: width 260ms ease;
+  overflow: hidden;
+  z-index: 40;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.expanded {
+  width: 220px;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .sideNav {
+    top: 12px;
+    left: 10px;
+    transform: none;
+    border-radius: 14px;
+    width: 64px;
+    padding: 10px 8px;
+  }
+
+  .expanded {
+    width: 210px;
+  }
+}

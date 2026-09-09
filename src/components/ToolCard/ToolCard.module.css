@@ -1,0 +1,68 @@
+.card {
+  border: 1px solid #303031;
+  border-radius: 12px;
+  padding: 18px;
+  background: #232324;
+}
+
+.cardIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #2f3034;
+  margin-bottom: 12px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.card p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #cbcbcb;
+}
+
+.navCard {
+  border: 0;
+  background: #232326;
+  color: #f2f2f2;
+  border-radius: 999px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 180ms ease;
+}
+
+.navCard:hover {
+  background: #111216;
+}
+
+.navIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #2e2f33;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.navLabel {
+  opacity: 0;
+  transform: translateX(-6px);
+  white-space: nowrap;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.navExpanded .navLabel {
+  opacity: 1;
+  transform: translateX(0);
+}
