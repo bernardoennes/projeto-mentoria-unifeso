@@ -1,16 +1,11 @@
-# React + Vite
+# projeto-mentoria-unifeso
+Projeto para uma aplicação web de um site de mentorias feito no curso de ADS da Unifeso de 2026
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Equipe no figma:
+https://www.figma.com/files/team/1674038592808415638/folder/644385121?fuid=1674038591402753999
 
-Currently, two official plugins are available:
+Projeto no Figma
+https://www.figma.com/design/Dfzm3rlBptxjbDi9nS28Pl/Sem-t%C3%ADtulo?m=auto&t=iO06g24n6XrunfJE-1
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Documentação do projeto:
+https://docs.google.com/document/d/1jCi9rMox3jwgbEhCucdANcMpP-Yt-eaw9MAjgh7Onkw/edit?usp=sharing
