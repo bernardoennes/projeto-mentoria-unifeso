@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Header from '../../components/Header/Header.jsx'
 import Sidebar from '../../components/Sidebar/Sidebar.jsx'
 import ToolCard from '../../components/ToolCard/ToolCard.jsx'
+import { useAuth } from '../../context/AuthContext.jsx'
 import styles from './HomePage.module.css'
 
 const navItems = [
@@ -9,6 +10,7 @@ const navItems = [
   { id: 'reservas', label: 'Reservas', iconName: 'CalendarCheck' },
   { id: 'moradores', label: 'Moradores', iconName: 'UsersThree' },
   { id: 'financeiro', label: 'Financeiro', iconName: 'CurrencyDollar' },
+  { id: 'pacotes', label: 'Encomendas', iconName: 'Package' },
 ]
 
 const navIconById = navItems.reduce((acc, item) => {
@@ -36,6 +38,12 @@ const toolItems = [
     iconName: 'Megaphone',
   },
   {
+    id: 'pacotes',
+    title: 'Encomendas',
+    value: '05 aguardando retirada',
+    iconName: navIconById.pacotes ?? 'Package',
+  },
+  {
     id: 'financeiro',
     title: 'Taxa mensal',
     value: '94% adimplencia',
@@ -44,16 +52,21 @@ const toolItems = [
 ]
 
 export default function HomePage() {
+  const { user, membership, signOut } = useAuth()
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
 
   const overlayClass = isSidebarExpanded ? ` ${styles.overlayVisible}` : ''
+  const userName = user?.name ?? 'Usuario'
+  const accessType = membership?.access_type ?? 'Nao definido'
 
   return (
     <div className={styles.pageShell}>
       <Header
         title="Condominio"
         subtitle="Sistema de Gerenciamento"
-        userName="Administrador"
+        userName={userName}
+        accessType={accessType}
+        onLogout={signOut}
       />
 
       <div className={styles.pageBody}>
@@ -68,7 +81,10 @@ export default function HomePage() {
 
         <main className={styles.homeContent}>
           <h1>Home</h1>
-          <p>Visao geral do condominio.</p>
+          <p>
+            Usuario atual: <strong>{userName}</strong> | Nivel: <strong>{accessType}</strong>
+          </p>
+
           <section className={styles.summaryGrid}>
             {toolItems.map((tool) => (
               <ToolCard

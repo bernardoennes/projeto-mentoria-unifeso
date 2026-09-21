@@ -31,8 +31,42 @@
   color: #d6d6d6;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoutButton {
+  height: 34px;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  background: #202024;
+  color: #f3f3f3;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: #2a2a31;
+}
+
 @media (max-width: 900px) {
   .header {
     padding: 0 14px;
+  }
+
+  .headerActions {
+    gap: 8px;
+  }
+
+  .headerUser {
+    font-size: 12px;
+  }
+
+  .logoutButton {
+    height: 30px;
+    padding: 0 8px;
+    font-size: 12px;
   }
 }
