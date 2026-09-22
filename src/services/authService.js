@@ -33,29 +33,82 @@ function sanitizeMembership(membership) {
   }
 }
 
-export async function loginUser(credentials) {
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email: credentials.cpf.trim(),
-    password: credentials.password,
-  })
+export async function checkCpfExists(cpf) {
+  const normalizedCpf = normalizeCpf(cpf)
 
-  if (authError || !authData?.user?.id) {
-    throw new Error('CPF ou senha invalidos.')
+  if (!normalizedCpf) {
+    return false
   }
 
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('id, name, auth_id, cpf')
-    .eq('auth_id', authData.user.id)
-    .single()
+  const { data, error } = await supabase.from('users').select('id').eq('cpf', normalizedCpf).limit(1)
 
-  if (userError || !userData) {
-    await supabase.auth.signOut()
+  if (error) {
+    console.error('Erro ao validar CPF:', error)
+    return false
+  }
+
+  return Array.isArray(data) ? data.length > 0 : Boolean(data)
+}
+
+export async function registerFirstAccess({ cpf, password }) {
+  const normalizedCpf = normalizeCpf(cpf)
+
+  if (!normalizedCpf) {
+    throw new Error('CPF obrigatório.')
+  }
+
+  const cpfExists = await checkCpfExists(normalizedCpf)
+
+  if (!cpfExists) {
+    throw new Error('CPF não foi cadastrado, procure informações com seu sindico.')
+  }
+
+  if (!password || password.length < 8) {
+    throw new Error('A senha deve ter no mínimo 8 caracteres.')
+  }
+
+  if (!/\d/.test(password)) {
+    throw new Error('A senha deve conter pelo menos um número.')
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    throw new Error('A senha deve conter pelo menos um caractere especial.')
+  }
+
+  return { success: true }
+}
+
+export async function loginUser(credentials) {
+  const cpf = normalizeCpf(credentials.cpf)
+
+  const { data, error } = await supabase.functions.invoke('login-by-cpf', {
+    body: {
+      cpf,
+      password: credentials.password,
+    },
+  })
+
+  if (error) {
+    console.error('Erro no login:', error)
+    throw new Error('Erro ao realizar o login, cheque seu email e senha')
+  }
+
+  if (data?.access_token && data?.refresh_token) {
+    await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    })
+  }
+
+  const authUser = data?.user ?? null
+  const userData = authUser ? await supabase.from('users').select('id, name, auth_id, cpf').eq('auth_id', authUser.id).single() : null
+
+  if (!authUser || userData?.error || !userData?.data) {
     throw new Error('Usuario autenticado, mas nao existe um perfil correspondente em public.users.')
   }
 
   const normalizedInputCpf = normalizeCpf(credentials.cpf)
-  const normalizedUserCpf = normalizeCpf(userData.cpf)
+  const normalizedUserCpf = normalizeCpf(userData.data.cpf)
 
   if (normalizedInputCpf && normalizedUserCpf && normalizedInputCpf !== normalizedUserCpf) {
     await supabase.auth.signOut()
@@ -83,7 +136,7 @@ export async function loginUser(credentials) {
         postal_code
       )
     `)
-    .eq('user_id', userData.id)
+    .eq('user_id', userData.data.id)
     .single()
 
   if (membershipError || !membershipData) {
@@ -93,14 +146,14 @@ export async function loginUser(credentials) {
 
   return {
     auth: {
-      access_token: authData.session?.access_token,
-      refresh_token: authData.session?.refresh_token,
+      access_token: data?.access_token,
+      refresh_token: data?.refresh_token,
       user: {
-        id: authData.user.id,
-        email: authData.user.email,
+        id: authUser.id,
+        email: authUser.email,
       },
     },
-    user: sanitizeUser(userData),
+    user: sanitizeUser(userData.data),
     membership: sanitizeMembership(membershipData),
   }
 }

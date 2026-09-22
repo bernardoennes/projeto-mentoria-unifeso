@@ -10,7 +10,15 @@ export default function AppRouter() {
         path="/login"
         element={
           <LoginRoute>
-            <AuthPage />
+            <AuthPage mode="login" />
+          </LoginRoute>
+        }
+      />
+      <Route
+        path="/first-steps"
+        element={
+          <LoginRoute>
+            <AuthPage mode="first-access" />
           </LoginRoute>
         }
       />
@@ -22,7 +30,7 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }
