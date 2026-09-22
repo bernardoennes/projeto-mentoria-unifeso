@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { supabase } from '../../../lib/supabase.js'
 import { registerFirstAccess } from '../../../services/authService.js'
+import { isValidCpf, normalizeCpf } from '../../../utils/cpfValidation.js'
 import CpfInput from '../CpfInput/CpfInput.jsx'
 import PasswordInput from '../PasswordInput/PasswordInput.jsx'
 import styles from './AuthForm.module.css'
@@ -24,48 +25,6 @@ const passwordRules = [
   { key: 'number', label: 'Conter número', test: (value) => /\d/.test(value) },
   { key: 'special', label: 'Conter caractere especial', test: (value) => /[^A-Za-z0-9]/.test(value) },
 ]
-
-function normalizeCpf(value = '') {
-  return String(value ?? '').replace(/\D/g, '')
-}
-
-function isValidCpf(value = '') {
-  const digits = normalizeCpf(value)
-
-  if (digits.length !== 11 || /^([0-9])\1+$/.test(digits)) {
-    return false
-  }
-
-  let sum = 0
-
-  for (let index = 0; index < 9; index += 1) {
-    sum += Number(digits.charAt(index)) * (10 - index)
-  }
-
-  let firstVerifierDigit = 11 - (sum % 11)
-
-  if (firstVerifierDigit >= 10) {
-    firstVerifierDigit = 0
-  }
-
-  if (Number(digits.charAt(9)) !== firstVerifierDigit) {
-    return false
-  }
-
-  sum = 0
-
-  for (let index = 0; index < 10; index += 1) {
-    sum += Number(digits.charAt(index)) * (11 - index)
-  }
-
-  let secondVerifierDigit = 11 - (sum % 11)
-
-  if (secondVerifierDigit >= 10) {
-    secondVerifierDigit = 0
-  }
-
-  return Number(digits.charAt(10)) === secondVerifierDigit
-}
 
 function getPasswordValidation(password) {
   return passwordRules.map((rule) => ({
@@ -388,7 +347,7 @@ export default function AuthForm({ mode = 'login' }) {
           <button
             type="button"
             className={styles.linkButton}
-            onClick={() => navigate('/first-steps')}
+            onClick={() => navigate('/primeiro-acesso')}
           >
             Não tem conta? <span>Acesse aqui</span>
           </button>
