@@ -1,0 +1,502 @@
+.pageShell {
+  height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+  background: var(--app-bg);
+  color: var(--text-primary);
+}
+
+.pageBody {
+  height: calc(100vh - 72px);
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+.pageOverlay {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 20;
+}
+
+.overlayVisible {
+  opacity: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 26px 28px 28px 116px;
+}
+
+.pageHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-width: 0;
+  margin: 0 0 22px;
+}
+
+.pageHeading h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 32px;
+  line-height: 1.15;
+}
+
+.pageHeading p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.calendarControls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.todayButton,
+.weekNavigator,
+.filterButton {
+  min-height: 42px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.todayButton {
+  padding: 0 17px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.weekNavigator {
+  display: grid;
+  grid-template-columns: 38px minmax(170px, 1fr) 38px;
+  align-items: center;
+  min-width: 248px;
+}
+
+.weekNavigator button,
+.filterButton {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.weekNavigator button {
+  width: 38px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.weekNavigator span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.filterWrap {
+  position: relative;
+}
+
+.filterButton {
+  width: 42px;
+}
+
+.filterPopover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 7px;
+  width: 190px;
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface-raised);
+  box-shadow: 0 12px 30px rgba(38, 48, 40, 0.14);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.filterPopover select {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--input-border);
+  border-radius: 7px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  padding: 0 8px;
+}
+
+.calendarLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  align-items: start;
+  gap: 16px;
+}
+
+.calendarPanel,
+.reservationPanel {
+  min-width: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 4px 18px rgba(38, 48, 40, 0.04);
+}
+
+.calendarPanel {
+  overflow: hidden;
+}
+
+.calendarViewport {
+  overflow: auto;
+  max-height: calc(100vh - 192px);
+  min-height: 500px;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.calendarCanvas {
+  min-width: 820px;
+}
+
+.weekHeader,
+.calendarBody {
+  display: grid;
+  grid-template-columns: 54px repeat(7, minmax(100px, 1fr));
+}
+
+.weekHeader {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  min-height: 54px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.timeHeader {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.dayHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  border-left: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.dayHeader span {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.dayHeader strong {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.todayHeader strong {
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+}
+
+.dayHeader:disabled {
+  opacity: 0.48;
+  cursor: default;
+}
+
+.calendarBody {
+  min-height: calc(24 * 32px);
+}
+
+.timeAxis {
+  display: grid;
+  grid-template-rows: repeat(24, 32px);
+  padding-right: 6px;
+  color: var(--text-muted);
+  text-align: right;
+  font-size: 9px;
+}
+
+.timeAxis span {
+  position: relative;
+  top: -6px;
+}
+
+.dayColumn {
+  position: relative;
+  min-width: 0;
+  border-left: 1px solid var(--border-color);
+}
+
+.daySlots {
+  display: grid;
+  grid-template-rows: repeat(24, 32px);
+}
+
+.daySlots button {
+  min-width: 0;
+  height: 32px;
+  border: 0;
+  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
+}
+
+.daySlots button:hover:not(:disabled) {
+  background: var(--selection-bg);
+}
+
+.daySlots button:disabled {
+  cursor: default;
+}
+
+.bookingBlock {
+  position: absolute;
+  z-index: 2;
+  left: 3px;
+  width: calc(100% - 6px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  padding: 4px 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.bookingBlock strong,
+.bookingBlock span,
+.bookingBlock small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookingBlock strong {
+  font-size: 10px;
+}
+
+.bookingBlock small {
+  font-size: 8px;
+}
+
+.mint {
+  background: #badbb8;
+  color: #1a291f;
+}
+
+.ochre {
+  background: #bf9264;
+  border-color: #9e754e;
+  color: #fff;
+}
+
+.blue {
+  background: #bfd0dc;
+  border-color: #8297a7;
+  color: #263845;
+}
+
+.reservationPanel {
+  padding: 20px;
+  background: var(--surface-raised);
+}
+
+.reservationPanel h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 19px;
+}
+
+.formIntro {
+  margin: 6px 0 22px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.reservationForm {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  padding: 0 10px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.timeFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.availableMessage,
+.unavailableMessage {
+  min-height: 16px;
+  margin: -5px 0 0;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.availableMessage {
+  color: var(--success-text);
+}
+
+.unavailableMessage {
+  color: var(--error-text);
+}
+
+.localNotice {
+  margin: -8px 0 0;
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--primary-action-bg);
+  color: var(--primary-action-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.stateMessage {
+  display: grid;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.stateMessage a {
+  width: fit-content;
+  color: var(--link-color);
+  font-weight: 650;
+}
+
+@media (max-width: 1100px) {
+  .calendarLayout {
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 12px;
+  }
+
+  .content {
+    padding-right: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .content {
+    padding: 82px 16px 22px;
+  }
+
+  .pageHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .calendarControls {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    align-self: stretch;
+    flex-wrap: wrap;
+  }
+
+  .calendarLayout {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reservationPanel {
+    max-width: none;
+  }
+
+  .calendarViewport {
+    max-height: 68vh;
+  }
+}
+
+@media (max-width: 520px) {
+  .content {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .pageHeading h1 {
+    font-size: 28px;
+  }
+
+  .weekNavigator {
+    min-width: 220px;
+    grid-template-columns: 34px minmax(150px, 1fr) 34px;
+  }
+}

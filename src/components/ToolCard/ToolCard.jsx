@@ -7,15 +7,23 @@ export default function ToolCard({
   value,
   variant = 'summary',
   expanded = false,
+  active = false,
+  disabled = false,
   onClick,
 }) {
   const CardIcon = resolvePhosphorIcon(iconName)
 
   if (variant === 'nav') {
     const navExpandedClass = expanded ? ` ${styles.navExpanded}` : ''
+    const navActiveClass = active ? ` ${styles.navActive}` : ''
 
     return (
-      <button type="button" className={`${styles.navCard}${navExpandedClass}`} onClick={onClick}>
+      <button
+        type="button"
+        className={`${styles.navCard}${navExpandedClass}${navActiveClass}`}
+        onClick={onClick}
+        disabled={disabled}
+      >
         <span className={styles.navIcon} aria-hidden="true">
           <CardIcon size={16} weight="bold" />
         </span>

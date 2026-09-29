@@ -6,8 +6,8 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import styles from './HomePage.module.css'
 
 const navItems = [
-  { id: 'home', label: 'Home', iconName: 'House' },
-  { id: 'reservas', label: 'Reservas', iconName: 'CalendarCheck' },
+  { id: 'home', label: 'Home', iconName: 'House', path: '/' },
+  { id: 'reservas', label: 'Reservas', iconName: 'CalendarCheck', path: '/reservas' },
   { id: 'moradores', label: 'Moradores', iconName: 'UsersThree' },
   { id: 'financeiro', label: 'Financeiro', iconName: 'CurrencyDollar' },
   { id: 'pacotes', label: 'Encomendas', iconName: 'Package' },
@@ -76,6 +76,7 @@ export default function HomePage() {
           expanded={isSidebarExpanded}
           onExpand={() => setIsSidebarExpanded(true)}
           onCollapse={() => setIsSidebarExpanded(false)}
+          activeId="home"
         />
 
         <main className={styles.homeContent}>

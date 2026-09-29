@@ -1,7 +1,9 @@
 import ToolCard from '../ToolCard/ToolCard.jsx'
+import { useNavigate } from 'react-router-dom'
 import styles from './Sidebar.module.css'
 
-export default function Sidebar({ items, expanded, onExpand, onCollapse }) {
+export default function Sidebar({ items, expanded, onExpand, onCollapse, activeId }) {
+  const navigate = useNavigate()
   const expandedClass = expanded ? ` ${styles.expanded}` : ''
 
   return (
@@ -19,6 +21,9 @@ export default function Sidebar({ items, expanded, onExpand, onCollapse }) {
             iconName={item.iconName}
             variant="nav"
             expanded={expanded}
+            active={item.id === activeId}
+            disabled={!item.path}
+            onClick={() => item.path && navigate(item.path)}
           />
         ))}
       </nav>
