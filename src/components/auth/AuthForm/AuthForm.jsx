@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useAuth } from '../../../context/AuthContext.jsx'
-import { supabase } from '../../../lib/supabase.js'
 import { registerFirstAccess } from '../../../services/authService.js'
 import { isValidCpf, normalizeCpf } from '../../../utils/cpfValidation.js'
 import CpfInput from '../CpfInput/CpfInput.jsx'
@@ -126,27 +125,6 @@ export default function AuthForm({ mode = 'login' }) {
     }
   }
 
-  const checkCpfExistsInDatabase = async (cpf) => {
-    const normalizedCpf = normalizeCpf(cpf)
-
-    if (!normalizedCpf) {
-      return false
-    }
-
-    const { data, error: cpfError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('cpf', normalizedCpf)
-      .limit(1)
-
-    if (cpfError) {
-      console.error('Erro ao validar CPF:', cpfError)
-      return false
-    }
-
-    return Array.isArray(data) ? data.length > 0 : Boolean(data)
-  }
-
   const resetSensitiveFields = () => {
     setFormState((previousState) => ({
       ...previousState,
@@ -217,13 +195,6 @@ export default function AuthForm({ mode = 'login' }) {
     }
 
     if (isFirstAccess) {
-      const existsInDatabase = await checkCpfExistsInDatabase(normalizedCpf)
-
-      if (!existsInDatabase) {
-        toast.error('CPF não foi cadastrado, procure informações com seu sindico.')
-        return
-      }
-
       const invalidRule = passwordChecks.find((rule) => !rule.isValid)
 
       if (invalidRule) {
@@ -237,16 +208,24 @@ export default function AuthForm({ mode = 'login' }) {
       }
 
       try {
-        await registerFirstAccess({
+        const result = await registerFirstAccess({
           cpf: normalizedCpf,
           password: formState.password,
         })
+
+        if (result?.first_access_completed !== true) {
+          throw new Error('Não foi possível confirmar a conclusão do primeiro acesso.')
+        }
 
         toast.success('Cadastro realizado com sucesso!')
         resetSensitiveFields()
         navigate('/login')
       } catch (registerError) {
-        toast.error(registerError.message)
+        if (registerError?.status === 401) {
+          toast.error('Primeiro acesso bloqueado pelo gateway. A Edge Function complete-first-access precisa ser republicada com verify_jwt desativado.')
+        } else {
+          toast.error(registerError.message)
+        }
       }
 
       return
@@ -283,7 +262,6 @@ export default function AuthForm({ mode = 'login' }) {
           name="cpf"
           value={formState.cpf}
           onChange={handleFieldChange}
-          checkCpfExists={isFirstAccess ? checkCpfExistsInDatabase : undefined}
           placeholder="000.000.000-00"
         />
 
@@ -347,7 +325,7 @@ export default function AuthForm({ mode = 'login' }) {
           <button
             type="button"
             className={styles.linkButton}
-            onClick={() => navigate('/primeiro-acesso')}
+            onClick={() => navigate('/first-steps')}
           >
             Não tem conta? <span>Acesse aqui</span>
           </button>

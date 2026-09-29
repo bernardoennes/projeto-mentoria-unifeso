@@ -15,6 +15,7 @@ export default function CpfInput({
   checkCpfExists,
   disabled = false,
   autoComplete = 'off',
+  variant = 'default',
 }) {
   const [validationMessage, setValidationMessage] = useState('')
   const [isChecking, setIsChecking] = useState(false)
@@ -152,11 +153,13 @@ export default function CpfInput({
     ) : null
 
   return (
-    <div className={styles.fieldWrapper}>
-      <label htmlFor={id}>{label}</label>
+    <div className={`${styles.fieldWrapper} ${variant === 'settings' ? styles.settingsFieldWrapper : ''}`}>
+      <label className={variant === 'settings' ? styles.visuallyHidden : undefined} htmlFor={id}>
+        {label}
+      </label>
 
       <div
-        className={`${styles.inputContainer} ${messageVisible ? styles.inputError : ''} ${
+        className={`${styles.inputContainer} ${variant === 'settings' ? styles.settingsInputContainer : ''} ${messageVisible ? styles.inputError : ''} ${
           !messageVisible && isValid ? styles.inputSuccess : ''
         }`}
       >

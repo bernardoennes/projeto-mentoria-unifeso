@@ -64,3 +64,43 @@
   color: #ff9d9d;
   font-size: 12px;
 }
+
+.settingsFieldWrapper {
+  min-width: 0;
+  display: block;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.settingsInputContainer input {
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #353942;
+  background: #17181d;
+  color: #f3f3f3;
+  padding: 0 40px 0 12px;
+}
+
+.settingsInputContainer input:focus {
+  outline: 2px solid #5d7efb;
+  outline-offset: 1px;
+}
+
+.settingsInputContainer.inputSuccess input {
+  border-color: #353942;
+  box-shadow: none;
+}
+
+.settingsInputContainer .statusIconSuccess {
+  color: #c1c5ce;
+}
