@@ -1,6 +1,6 @@
 .panel {
-  background: #17181d;
-  border: 1px solid #2e2f36;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
 }
@@ -31,7 +31,7 @@
   display: grid;
   gap: 7px;
   min-width: 0;
-  color: #c1c5ce;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -44,10 +44,10 @@
   width: 100%;
   min-width: 0;
   height: 42px;
-  border: 1px solid #353942;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  background: #111318;
-  color: #f3f3f3;
+  background: var(--input-bg);
+  color: var(--text-primary);
   padding: 0 42px 0 12px;
 }
 
@@ -63,12 +63,12 @@
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #c1c5ce;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
 .visibilityButton:hover {
-  background: #252832;
+  background: var(--control-hover);
 }
 
 .primaryButton {
@@ -78,8 +78,8 @@
   cursor: pointer;
   margin-top: 16px;
   font-weight: 600;
-  background: #5d7efb;
-  color: #fff;
+  background: var(--primary-action-bg);
+  color: var(--primary-action-text);
 }
 
 @media (max-width: 900px) {

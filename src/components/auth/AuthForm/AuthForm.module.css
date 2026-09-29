@@ -1,7 +1,7 @@
 .authCard {
   width: min(480px, 100%);
-  background: rgba(16, 20, 33, 0.88);
-  border: 1px solid #2b3349;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 24px 44px rgba(0, 0, 0, 0.35);
@@ -14,7 +14,7 @@
 
 .authCard > p {
   margin-top: 8px;
-  color: #b5bdd3;
+  color: var(--text-secondary);
 }
 
 .form {
@@ -29,8 +29,8 @@
   margin-top: 2px;
   padding: 12px;
   border-radius: 10px;
-  background: rgba(22, 29, 47, 0.8);
-  border: 1px solid #2b3449;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
 }
 
 .passwordRule {
@@ -42,11 +42,11 @@
 }
 
 .passwordRuleValid {
-  color: #5fe3b0;
+  color: var(--success-text);
 }
 
 .passwordRuleInvalid {
-  color: #ff9b9b;
+  color: var(--error-text);
 }
 
 .submitButton {
@@ -68,14 +68,14 @@
 .linkButton {
   background: transparent;
   border: 0;
-  color: #dfe7ff;
+  color: var(--accent-soft-text);
   font-size: 14px;
   cursor: pointer;
   padding: 6px 0 0;
 }
 
 .linkButton span {
-  color: #82bbff;
+  color: var(--link-color);
   font-weight: 700;
   text-decoration: underline;
 }
@@ -83,9 +83,9 @@
 .errorBox {
   padding: 10px;
   border-radius: 10px;
-  background: rgba(255, 96, 96, 0.12);
-  border: 1px solid rgba(255, 96, 96, 0.35);
-  color: #ffd7d7;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
 }
 
 @media (max-width: 640px) {

@@ -5,7 +5,7 @@
 
 .fieldWrapper label {
   font-size: 13px;
-  color: #cdd4e8;
+  color: var(--text-secondary);
 }
 
 .inputContainer {
@@ -18,32 +18,32 @@
   width: 100%;
   height: 42px;
   border-radius: 10px;
-  border: 1px solid #3a425c;
-  background: #161d2f;
-  color: #eff3ff;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
   padding: 0 44px 0 12px;
 }
 
 .inputContainer input:focus {
-  outline: 2px solid #5f7cff;
+  outline: 2px solid var(--focus-color);
   outline-offset: 1px;
 }
 
 .inputContainer.inputError input {
-  border-color: rgba(255, 116, 116, 0.9);
-  box-shadow: 0 0 0 1px rgba(255, 116, 116, 0.35);
+  border-color: var(--error-border-color);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--error-border-color) 35%, transparent);
 }
 
 .inputContainer.inputSuccess input {
-  border-color: rgba(50, 205, 150, 0.9);
-  box-shadow: 0 0 0 1px rgba(50, 205, 150, 0.28);
+  border-color: var(--success-border);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--success-border) 28%, transparent);
 }
 
 .statusText {
   position: absolute;
   right: 12px;
   font-size: 11px;
-  color: #b5bdd3;
+  color: var(--text-muted);
 }
 
 .statusIconError,
@@ -53,15 +53,15 @@
 }
 
 .statusIconError {
-  color: #ff8e8e;
+  color: var(--error-text);
 }
 
 .statusIconSuccess {
-  color: #4de0a6;
+  color: var(--success-text);
 }
 
 .fieldMessageError {
-  color: #ff9d9d;
+  color: var(--error-text);
   font-size: 12px;
 }
 
@@ -85,22 +85,22 @@
 .settingsInputContainer input {
   height: 42px;
   border-radius: 8px;
-  border: 1px solid #353942;
-  background: #17181d;
-  color: #f3f3f3;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
   padding: 0 40px 0 12px;
 }
 
 .settingsInputContainer input:focus {
-  outline: 2px solid #5d7efb;
+  outline: 2px solid var(--focus-color);
   outline-offset: 1px;
 }
 
 .settingsInputContainer.inputSuccess input {
-  border-color: #353942;
+  border-color: var(--input-border);
   box-shadow: none;
 }
 
 .settingsInputContainer .statusIconSuccess {
-  color: #c1c5ce;
+  color: var(--text-secondary);
 }

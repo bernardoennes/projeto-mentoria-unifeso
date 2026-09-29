@@ -1,6 +1,6 @@
 .panel {
-  background: #17181d;
-  border: 1px solid #2e2f36;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
 }
@@ -26,18 +26,18 @@
 .listControls select {
   min-width: 0;
   height: 42px;
-  border: 1px solid #353942;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  background: #17181d;
-  color: #f3f3f3;
+  background: var(--input-bg);
+  color: var(--text-primary);
   padding: 0 12px;
 }
 
 .createForm {
   margin: 0 0 24px;
   padding: 18px;
-  background: #111318;
-  border: 1px solid #2d2e35;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
 }
 
@@ -55,10 +55,10 @@
 .formGrid > input {
   min-width: 0;
   height: 42px;
-  border: 1px solid #353942;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  background: #17181d;
-  color: #f3f3f3;
+  background: var(--input-bg);
+  color: var(--text-primary);
   padding: 0 12px;
 }
 
@@ -67,8 +67,8 @@
   border-radius: 8px;
   padding: 10px 14px;
   margin-top: 12px;
-  background: #5d7efb;
-  color: #fff;
+  background: var(--primary-action-bg);
+  color: var(--primary-action-text);
   font-weight: 600;
   cursor: pointer;
 }
@@ -83,8 +83,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: #111318;
-  border: 1px solid #2d2e35;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 14px 16px;
 }
@@ -101,15 +101,15 @@
   display: inline-grid;
   place-items: center;
   padding: 0;
-  border: 1px solid #70404a;
+  border: 1px solid var(--danger-border);
   border-radius: 7px;
   background: transparent;
-  color: #ffc0c7;
+  color: var(--danger-text);
   cursor: pointer;
 }
 
 .removeButton:hover:not(:disabled) {
-  background: #3a2026;
+  background: var(--danger-bg);
 }
 
 .removeButton:disabled {
@@ -123,37 +123,37 @@
 }
 
 .listItem small {
-  color: #a9adb7;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
 .listItem .maskedCpf {
-  color: #c1c5ce;
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
 .badge {
-  background: #243356;
-  color: #dfe7ff;
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 12px;
 }
 
 .emptyState {
-  background: #111318;
-  border: 1px solid #2d2e35;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 18px;
-  color: #bfc3cc;
+  color: var(--text-secondary);
 }
 
 .errorState {
-  background: #321c20;
-  border: 1px solid #70404a;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   border-radius: 12px;
   padding: 18px;
-  color: #ffd7dc;
+  color: var(--danger-text);
 }
 
 @media (max-width: 700px) {

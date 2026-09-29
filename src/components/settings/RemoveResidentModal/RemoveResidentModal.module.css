@@ -5,16 +5,16 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.62);
+  background: var(--overlay-bg);
 }
 
 .dialog {
   width: min(440px, 100%);
   padding: 24px;
-  border: 1px solid #3b3d45;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: #17181d;
-  color: #f3f3f3;
+  background: var(--surface-raised);
+  color: var(--text-primary);
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.4);
 }
 
@@ -25,7 +25,7 @@
 
 .dialog p {
   margin: 12px 0 22px;
-  color: #c1c5ce;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -45,15 +45,15 @@
 }
 
 .cancelButton {
-  border: 1px solid #3b3d45;
+  border: 1px solid var(--border-color);
   background: transparent;
-  color: #f3f3f3;
+  color: var(--text-primary);
 }
 
 .confirmButton {
-  border: 1px solid #913c48;
-  background: #7c2f3b;
-  color: #fff;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-action-bg);
+  color: var(--primary-action-text);
 }
 
 .cancelButton:disabled,

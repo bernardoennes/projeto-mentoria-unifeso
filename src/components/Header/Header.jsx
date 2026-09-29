@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Moon, Sun, UserCircle } from '@phosphor-icons/react'
 import ProfileModal from '../ProfileModal/ProfileModal.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useTheme } from '../../context/ThemeContext.jsx'
 import styles from './Header.module.css'
 
 export default function Header({ title, subtitle, userName, accessType, onLogout }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const navigate = useNavigate()
   const { signOut } = useAuth()
+  const { theme, toggleTheme } = useTheme()
 
   const handleLogout = async () => {
     setIsProfileOpen(false)
@@ -38,10 +41,11 @@ export default function Header({ title, subtitle, userName, accessType, onLogout
           <button
             type="button"
             className={styles.profileTrigger}
+            aria-label="Abrir menu do perfil"
+            title="Perfil"
             onClick={() => setIsProfileOpen((current) => !current)}
           >
-            <span>{userName}</span>
-            <small>{accessType}</small>
+            <UserCircle size={22} weight="regular" aria-hidden="true" />
           </button>
 
           {isProfileOpen && (
@@ -54,6 +58,17 @@ export default function Header({ title, subtitle, userName, accessType, onLogout
             />
           )}
         </div>
+        <button
+          type="button"
+          className={styles.themeTrigger}
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+          title={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+        >
+          {theme === 'dark'
+            ? <Sun size={20} weight="regular" aria-hidden="true" />
+            : <Moon size={20} weight="regular" aria-hidden="true" />}
+        </button>
       </div>
     </header>
   )

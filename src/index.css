@@ -1,6 +1,91 @@
+:root {
+  color-scheme: dark;
+  --app-bg: #111214;
+  --header-bg: #0f0f10;
+  --surface: #17181d;
+  --surface-raised: #1d1e23;
+  --surface-muted: #202228;
+  --surface-inset: #111318;
+  --control-bg: #17171a;
+  --control-hover: #292b30;
+  --text-primary: #f3f3f3;
+  --text-secondary: #c1c5ce;
+  --text-muted: #a7acb7;
+  --border-color: #2e2f36;
+  --border-strong: #3a425c;
+  --focus-color: #8ba2ff;
+  --accent-bg: #263354;
+  --accent-text: #dfe7ff;
+  --danger-text: #ff9e9e;
+  --danger-border: #3a2d2d;
+  --danger-bg: #321c20;
+  --danger-action-bg: #7c2f3b;
+  --input-bg: #111318;
+  --input-border: #353942;
+  --primary-action-bg: #5d7efb;
+  --primary-action-hover: #4f6ee5;
+  --primary-action-text: #ffffff;
+  --accent-soft-bg: #243356;
+  --accent-soft-text: #dfe7ff;
+  --selection-bg: #263354;
+  --selection-border: #647fe0;
+  --success-text: #5fe3b0;
+  --success-border: #32cd96;
+  --error-text: #ff9b9b;
+  --error-border-color: #ff7474;
+  --link-color: #82bbff;
+  --scrollbar-thumb: #505753;
+  --scrollbar-track: #17181d;
+  --overlay-bg: rgba(10, 10, 12, 0.36);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --app-bg: #f3f5f0;
+  --header-bg: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-muted: #edf1e9;
+  --surface-inset: #f5f7f3;
+  --control-bg: #f7f9f5;
+  --control-hover: #e8eee4;
+  --text-primary: #263028;
+  --text-secondary: #465047;
+  --text-muted: #687265;
+  --border-color: #d4dbd0;
+  --border-strong: #a6b09f;
+  --focus-color: #58764f;
+  --accent-bg: #e2eddb;
+  --accent-text: #344b30;
+  --danger-text: #a33e37;
+  --danger-border: #e2c6c3;
+  --danger-bg: #f9e8e7;
+  --danger-action-bg: #a33e37;
+  --input-bg: #ffffff;
+  --input-border: #c7ccbf;
+  --primary-action-bg: #58764f;
+  --primary-action-hover: #45613d;
+  --primary-action-text: #ffffff;
+  --accent-soft-bg: #e8eee4;
+  --accent-soft-text: #344b30;
+  --selection-bg: #e2eddb;
+  --selection-border: #829b76;
+  --success-text: #36724f;
+  --success-border: #71a986;
+  --error-text: #a33e37;
+  --error-border-color: #c77973;
+  --link-color: #425e39;
+  --scrollbar-thumb: #aab3a1;
+  --scrollbar-track: #f3f5f0;
+  --overlay-bg: rgba(25, 34, 26, 0.24);
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--app-bg);
+  color: var(--text-primary);
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 #root {

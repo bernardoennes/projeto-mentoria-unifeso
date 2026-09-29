@@ -1,6 +1,6 @@
 .panel {
-  background: #17181d;
-  border: 1px solid #2e2f36;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
 }
@@ -13,8 +13,8 @@
 .createForm {
   margin: 0 0 24px;
   padding: 18px;
-  background: #111318;
-  border: 1px solid #2d2e35;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
 }
 
@@ -33,12 +33,12 @@
   display: grid;
   gap: 7px;
   min-width: 0;
-  color: #c1c5ce;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .field span small {
-  color: #9096a3;
+  color: var(--text-muted);
 }
 
 .field input,
@@ -46,10 +46,10 @@
   width: 100%;
   min-width: 0;
   height: 42px;
-  border: 1px solid #353942;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  background: #17181d;
-  color: #f3f3f3;
+  background: var(--input-bg);
+  color: var(--text-primary);
   padding: 0 12px;
 }
 
@@ -62,7 +62,7 @@
 
 .weekdayField legend {
   margin-bottom: 7px;
-  color: #c1c5ce;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -88,21 +88,21 @@
   height: 42px;
   display: grid;
   place-items: center;
-  border: 1px solid #353942;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  background: #17181d;
-  color: #c1c5ce;
+  background: var(--input-bg);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .weekdayOption input:checked + span {
-  border-color: #647fe0;
-  background: #263354;
-  color: #f3f5ff;
+  border-color: var(--selection-border);
+  background: var(--selection-bg);
+  color: var(--accent-soft-text);
 }
 
 .weekdayOption input:focus-visible + span {
-  outline: 2px solid #8ba2ff;
+  outline: 2px solid var(--focus-color);
   outline-offset: 2px;
 }
 
@@ -112,8 +112,8 @@
   padding: 0 14px;
   border: 0;
   border-radius: 8px;
-  background: #5d7efb;
-  color: #fff;
+  background: var(--primary-action-bg);
+  color: var(--primary-action-text);
   font-weight: 600;
   cursor: pointer;
 }
@@ -133,8 +133,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: #111318;
-  border: 1px solid #2d2e35;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 14px 16px;
 }
@@ -145,29 +145,29 @@
 }
 
 .listItem small {
-  color: #a9adb7;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
 .weekdays {
-  color: #c1c5ce;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .emptyState {
-  background: #111318;
-  border: 1px solid #2d2e35;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 18px;
-  color: #bfc3cc;
+  color: var(--text-secondary);
 }
 
 .errorState {
-  background: #321c20;
-  border: 1px solid #70404a;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   border-radius: 12px;
   padding: 18px;
-  color: #ffd7dc;
+  color: var(--danger-text);
 }
 
 @media (max-width: 700px) {

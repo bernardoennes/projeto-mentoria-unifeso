@@ -4,13 +4,13 @@
   left: 16px;
   transform: translateY(-50%);
   width: 72px;
-  background: #f1f1f1;
+  background: var(--surface);
   border-radius: 18px;
   padding: 14px 10px;
   transition: width 260ms ease;
   overflow: hidden;
   z-index: 40;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
 }
 
 .expanded {

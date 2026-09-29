@@ -1,8 +1,8 @@
 .sidebar {
   width: 260px;
   min-width: 220px;
-  background: #17181d;
-  border: 1px solid #2e2f36;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 18px 14px;
   display: flex;
@@ -16,7 +16,7 @@
   border-radius: 10px;
   padding: 12px 14px;
   background: transparent;
-  color: #d9d9dd;
+  color: var(--text-secondary);
   text-align: left;
   cursor: pointer;
   font-size: 14px;
@@ -24,14 +24,14 @@
 }
 
 .navButton:hover {
-  background: #202228;
-  border-color: #383c43;
+  background: var(--surface-muted);
+  border-color: var(--border-color);
 }
 
 .activeButton {
-  background: #1c2130;
-  border-color: #40517a;
-  color: #f3f7ff;
+  background: var(--accent-soft-bg);
+  border-color: var(--selection-border);
+  color: var(--accent-soft-text);
 }
 
 @media (max-width: 900px) {
