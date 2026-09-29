@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import InfoField from '../InfoField/InfoField.jsx'
 import { updatePassword } from '../../../services/userService.js'
@@ -12,7 +13,13 @@ const accountFields = [
 
 export default function AccountSection({ profile }) {
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  const [visiblePasswords, setVisiblePasswords] = useState({})
   const [isSavingPassword, setIsSavingPassword] = useState(false)
+  const passwordFields = [
+    { name: 'currentPassword', label: 'Senha atual', autoComplete: 'current-password' },
+    { name: 'newPassword', label: 'Nova senha', autoComplete: 'new-password' },
+    { name: 'confirmPassword', label: 'Confirmar nova senha', autoComplete: 'new-password' },
+  ]
 
   const handlePasswordSubmit = async (event) => {
     event.preventDefault()
@@ -32,6 +39,7 @@ export default function AccountSection({ profile }) {
     try {
       await updatePassword(passwordForm)
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      setVisiblePasswords({})
       toast.success('Senha alterada com sucesso.')
     } catch (error) {
       toast.error(error.message ?? 'Não foi possível alterar a senha.')
@@ -57,30 +65,41 @@ export default function AccountSection({ profile }) {
       <form className={styles.formBlock} onSubmit={handlePasswordSubmit}>
         <h3>Alterar senha</h3>
         <div className={styles.inlineFields}>
-          <input
-            type="password"
-            autoComplete="current-password"
-            placeholder="Senha atual"
-            required
-            value={passwordForm.currentPassword}
-            onChange={(event) => setPasswordForm({ ...passwordForm, currentPassword: event.target.value })}
-          />
-          <input
-            type="password"
-            autoComplete="new-password"
-            placeholder="Nova senha"
-            required
-            value={passwordForm.newPassword}
-            onChange={(event) => setPasswordForm({ ...passwordForm, newPassword: event.target.value })}
-          />
-          <input
-            type="password"
-            autoComplete="new-password"
-            placeholder="Confirmar nova senha"
-            required
-            value={passwordForm.confirmPassword}
-            onChange={(event) => setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })}
-          />
+          {passwordFields.map((field) => {
+            const isVisible = Boolean(visiblePasswords[field.name])
+            const VisibilityIcon = isVisible ? EyeSlash : Eye
+
+            return (
+              <label key={field.name} className={styles.passwordField}>
+                <span>{field.label}</span>
+                <div className={styles.passwordInputWrapper}>
+                  <input
+                    type={isVisible ? 'text' : 'password'}
+                    autoComplete={field.autoComplete}
+                    required
+                    value={passwordForm[field.name]}
+                    onChange={(event) =>
+                      setPasswordForm({ ...passwordForm, [field.name]: event.target.value })
+                    }
+                  />
+                  <button
+                    type="button"
+                    className={styles.visibilityButton}
+                    onClick={() =>
+                      setVisiblePasswords((current) => ({
+                        ...current,
+                        [field.name]: !current[field.name],
+                      }))
+                    }
+                    aria-label={`${isVisible ? 'Ocultar' : 'Mostrar'} ${field.label.toLowerCase()}`}
+                    title={`${isVisible ? 'Ocultar' : 'Mostrar'} ${field.label.toLowerCase()}`}
+                  >
+                    <VisibilityIcon size={18} aria-hidden="true" />
+                  </button>
+                </div>
+              </label>
+            )
+          })}
         </div>
         <button type="submit" className={styles.primaryButton} disabled={isSavingPassword}>
           {isSavingPassword ? 'Salvando...' : 'Salvar senha'}

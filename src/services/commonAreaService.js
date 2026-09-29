@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js'
+import { getEdgeFunctionError } from './edgeFunctionError.js'
 
 export const AREA_TYPE_LABELS = {
   SWIMMING_POOL: 'Piscina',
@@ -27,4 +28,28 @@ export async function fetchCommonAreas(organisationId) {
   }
 
   return data ?? []
+}
+
+export async function createCommonArea({
+  organisationId,
+  areaType,
+  availableWeekdays,
+  startHour,
+  endHour,
+}) {
+  const { data, error } = await supabase.functions.invoke('create-area', {
+    body: {
+      organisation_id: organisationId,
+      area_type: areaType,
+      available_weekdays: availableWeekdays,
+      start_hour: startHour || null,
+      end_hour: endHour || null,
+    },
+  })
+
+  if (error) {
+    throw await getEdgeFunctionError(error)
+  }
+
+  return data
 }

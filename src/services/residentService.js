@@ -16,6 +16,7 @@ function normalizeResident(item) {
     id: item.id,
     userId: profile.id,
     name: profile.name,
+    cpfMasked: profile.cpf_masked?.replace(/x/gi, '*') ?? '',
     role: item.access_type ?? 'CONDOMINO',
     block: item.block,
     unit_number: item.unit_number,

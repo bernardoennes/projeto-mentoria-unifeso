@@ -20,10 +20,13 @@ export default function SettingsPage() {
     activeSection,
     setActiveSection,
     profile,
+    canManage,
     commonAreas,
     residents,
     isLoading,
     areasError,
+    createArea,
+    isCreatingArea,
     residentsError,
     createResident,
     isCreatingResident,
@@ -31,16 +34,28 @@ export default function SettingsPage() {
     isRemovingResident,
   } = useSettingsPageState({ user, membership })
 
+  const visibleSections = canManage
+    ? sectionDefinitions
+    : sectionDefinitions.filter((section) => section.id === 'account')
+
   const renderSelectedSection = () => {
     switch (activeSection) {
       case 'areas':
-        return <CommonAreasSection items={commonAreas} error={areasError} />
+        return (
+          <CommonAreasSection
+            items={commonAreas}
+            error={areasError}
+            canManage={canManage}
+            onCreate={createArea}
+            isCreating={isCreatingArea}
+          />
+        )
       case 'residents':
         return (
           <ResidentsSection
             items={residents}
             error={residentsError}
-            canManage={['SINDICO', 'SÍNDICO'].includes(String(membership?.access_type).toUpperCase())}
+            canManage={canManage}
             onCreate={createResident}
             isCreating={isCreatingResident}
             onRemove={deleteResident}
@@ -64,7 +79,7 @@ export default function SettingsPage() {
 
       <div className={styles.settingsLayout}>
         <SettingsSidebar
-          items={sectionDefinitions}
+          items={visibleSections}
           activeItem={activeSection}
           onSelect={setActiveSection}
         />

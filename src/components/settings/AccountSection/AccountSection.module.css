@@ -27,13 +27,48 @@
   gap: 12px;
 }
 
-.inlineFields input {
+.passwordField {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #c1c5ce;
+  font-size: 13px;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  min-width: 0;
+}
+
+.passwordInputWrapper input {
+  width: 100%;
+  min-width: 0;
   height: 42px;
   border: 1px solid #353942;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #111318;
   color: #f3f3f3;
-  padding: 0 12px;
+  padding: 0 42px 0 12px;
+}
+
+.visibilityButton {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #c1c5ce;
+  cursor: pointer;
+}
+
+.visibilityButton:hover {
+  background: #252832;
 }
 
 .primaryButton {

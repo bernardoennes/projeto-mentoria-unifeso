@@ -24,7 +24,7 @@ export default function ResidentsSection({
 
   const visibleResidents = items
     .filter((resident) => {
-      const searchableText = [resident.name, resident.block, resident.unit_number]
+      const searchableText = [resident.name, resident.cpfMasked, resident.block, resident.unit_number]
         .filter(Boolean)
         .join(' ')
         .toLocaleLowerCase('pt-BR')
@@ -139,7 +139,7 @@ export default function ResidentsSection({
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Pesquisar por nome, bloco ou unidade"
+              placeholder="Pesquisar por nome, CPF, bloco ou unidade"
               aria-label="Pesquisar condôminos"
             />
             <select
@@ -163,6 +163,7 @@ export default function ResidentsSection({
                     <small>
                       {[resident.block, resident.unit_number].filter(Boolean).join(' · ') || 'Unidade não informada'}
                     </small>
+                    {resident.cpfMasked && <small className={styles.maskedCpf}>CPF {resident.cpfMasked}</small>}
                   </div>
                   <div className={styles.rowActions}>
                     <span className={styles.badge}>{resident.role ?? 'Morador'}</span>

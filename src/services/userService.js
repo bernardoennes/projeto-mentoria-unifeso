@@ -9,7 +9,7 @@ export function maskCpf(cpf) {
 
   const first = digits.slice(0, 3)
   const last = digits.slice(-2)
-  return `${first}•••${last}`
+  return `${first}.***.***-${last}`
 }
 
 export async function updatePassword({ currentPassword, newPassword }) {
@@ -31,7 +31,7 @@ export function buildUserProfile(user, membership) {
   return {
     id: user.id,
     name: user.name,
-    cpf: user.cpf_masked ?? maskCpf(user.cpf),
+    cpf: user.cpf_masked?.replace(/x/gi, '*') ?? maskCpf(user.cpf),
     access_type: membership?.access_type ?? 'Não definido',
     organisation_id: membership?.organisation_id ?? null,
   }

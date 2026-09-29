@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchCommonAreas } from '../../../services/commonAreaService.js'
+import { createCommonArea as createCommonAreaRequest, fetchCommonAreas } from '../../../services/commonAreaService.js'
 import { fetchResidents, provisionCondomino, removeCondomino } from '../../../services/residentService.js'
 import { buildUserProfile } from '../../../services/userService.js'
+import { canManageCondominium } from '../../../utils/permissions.js'
 
 function getQueryErrorMessage(error) {
   if (error?.code === '42501' || error?.status === 403) {
@@ -18,12 +19,22 @@ export function useSettingsPageState({ user, membership }) {
   const [residents, setResidents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [areasError, setAreasError] = useState('')
+  const [isCreatingArea, setIsCreatingArea] = useState(false)
   const [residentsError, setResidentsError] = useState('')
   const [isCreatingResident, setIsCreatingResident] = useState(false)
   const [isRemovingResident, setIsRemovingResident] = useState(false)
 
-  const activeSection = searchParams.get('section') ?? 'account'
+  const canManage = canManageCondominium(membership)
+  const requestedSection = searchParams.get('section')
+  const isRestrictedSection = ['areas', 'residents'].includes(requestedSection) && !canManage
+  const activeSection = isRestrictedSection ? 'account' : requestedSection ?? 'account'
   const profile = buildUserProfile(user, membership)
+
+  useEffect(() => {
+    if (isRestrictedSection) {
+      setSearchParams({ section: 'account' }, { replace: true })
+    }
+  }, [isRestrictedSection, setSearchParams])
 
   useEffect(() => {
     const organisationId = membership?.organisation_id
@@ -51,18 +62,22 @@ export function useSettingsPageState({ user, membership }) {
       setIsLoading(false)
     }
 
-    if (organisationId) {
+    if (organisationId && canManage) {
       loadSettingsData()
     }
 
     return () => {
       isCurrent = false
     }
-  }, [membership?.organisation_id])
+  }, [canManage, membership?.organisation_id])
 
   const setActiveSection = (sectionId) => setSearchParams({ section: sectionId })
 
   const createResident = async ({ name, cpf, block, unitNumber }) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem cadastrar condôminos.')
+    }
+
     if (!membership?.organisation_id) {
       throw new Error('Não foi possível identificar a organização do usuário.')
     }
@@ -91,7 +106,47 @@ export function useSettingsPageState({ user, membership }) {
     }
   }
 
+  const createArea = async ({ areaType, availableWeekdays, startHour, endHour }) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem cadastrar áreas comuns.')
+    }
+
+    if (!membership?.organisation_id) {
+      throw new Error('Não foi possível identificar a organização do usuário.')
+    }
+
+    setIsCreatingArea(true)
+
+    try {
+      const result = await createCommonAreaRequest({
+        organisationId: membership.organisation_id,
+        areaType,
+        availableWeekdays,
+        startHour,
+        endHour,
+      })
+
+      try {
+        const updatedAreas = await fetchCommonAreas(membership.organisation_id)
+        setCommonAreas(updatedAreas)
+        setAreasError('')
+      } catch (refreshError) {
+        setAreasError(
+          `Área cadastrada, mas não foi possível atualizar a lista: ${getQueryErrorMessage(refreshError)}`,
+        )
+      }
+
+      return result
+    } finally {
+      setIsCreatingArea(false)
+    }
+  }
+
   const deleteResident = async (userId) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem remover condôminos.')
+    }
+
     if (!membership?.organisation_id || !Number.isSafeInteger(Number(userId))) {
       throw new Error('Não foi possível identificar o condomínio ou o perfil do condômino.')
     }
@@ -118,10 +173,13 @@ export function useSettingsPageState({ user, membership }) {
     activeSection,
     setActiveSection,
     profile,
-    commonAreas: membership?.organisation_id ? commonAreas : [],
-    residents: membership?.organisation_id ? residents : [],
-    isLoading: Boolean(membership?.organisation_id) && isLoading,
+    canManage,
+    commonAreas: membership?.organisation_id && canManage ? commonAreas : [],
+    residents: membership?.organisation_id && canManage ? residents : [],
+    isLoading: Boolean(membership?.organisation_id && canManage) && isLoading,
     areasError,
+    createArea,
+    isCreatingArea,
     residentsError,
     createResident,
     isCreatingResident,
