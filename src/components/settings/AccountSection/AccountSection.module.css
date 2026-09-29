@@ -1,0 +1,55 @@
+.panel {
+  background: #17181d;
+  border: 1px solid #2e2f36;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.panel h2,
+.formBlock h3 {
+  margin: 0 0 18px;
+  font-size: 1.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.formBlock {
+  margin-top: 28px;
+}
+
+.inlineFields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.inlineFields input {
+  height: 42px;
+  border: 1px solid #353942;
+  border-radius: 10px;
+  background: #111318;
+  color: #f3f3f3;
+  padding: 0 12px;
+}
+
+.primaryButton {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  margin-top: 16px;
+  font-weight: 600;
+  background: #5d7efb;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .infoGrid,
+  .inlineFields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,20 @@
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #111318;
+  border: 1px solid #2d2e35;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.fieldLabel {
+  color: #a2a7b3;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.fieldValue {
+  font-size: 16px;
+}

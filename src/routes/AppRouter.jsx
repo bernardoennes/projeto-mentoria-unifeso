@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AuthPage from '../pages/auth/AuthPage.jsx'
 import HomePage from '../pages/homepage/HomePage.jsx'
+import SettingsPage from '../pages/settings/SettingsPage.jsx'
 import { LoginRoute, ProtectedRoute } from './ProtectedRoute.jsx'
 
 export default function AppRouter() {
@@ -27,6 +28,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         }
       />

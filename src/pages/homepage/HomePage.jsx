@@ -52,7 +52,7 @@ const toolItems = [
 ]
 
 export default function HomePage() {
-  const { user, membership, signOut } = useAuth()
+  const { user, membership } = useAuth()
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
 
   const overlayClass = isSidebarExpanded ? ` ${styles.overlayVisible}` : ''
@@ -66,7 +66,6 @@ export default function HomePage() {
         subtitle="Sistema de Gerenciamento"
         userName={userName}
         accessType={accessType}
-        onLogout={signOut}
       />
 
       <div className={styles.pageBody}>
