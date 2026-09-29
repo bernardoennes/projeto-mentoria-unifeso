@@ -1,15 +1,11 @@
 import { supabase } from '../lib/supabase.js'
-import { getEdgeFunctionError } from './edgeFunctionError.js'
+import { getEdgeFunctionError, getRequestError } from './edgeFunctionError.js'
 
 function normalizeResident(item) {
   const profile = item.users ?? {}
 
   if (!profile.name) {
-    const returnedColumns = Object.keys(item).join(', ')
-    const profileColumns = Object.keys(profile).join(', ')
-    throw new Error(
-      `A RPC get_organisation_condominos não retornou users.name. Colunas recebidas: ${returnedColumns || 'nenhuma'}; users: ${profileColumns || 'nenhum campo'}.`,
-    )
+    throw new Error('Não foi possível carregar os dados dos moradores. Tente novamente.')
   }
 
   return {
@@ -33,7 +29,7 @@ export async function fetchResidents(organisationId) {
   })
 
   if (error) {
-    throw error
+    throw getRequestError(error, 'Não foi possível carregar os moradores. Tente novamente.')
   }
 
   return (data ?? []).map(normalizeResident)
@@ -51,7 +47,7 @@ export async function provisionCondomino({ name, cpf, organisationId, block, uni
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error)
+    throw await getEdgeFunctionError(error, 'Não foi possível cadastrar o morador. Tente novamente.')
   }
 
   return data
@@ -66,7 +62,7 @@ export async function removeCondomino({ organisationId, userId }) {
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error)
+    throw await getEdgeFunctionError(error, 'Não foi possível remover o morador. Tente novamente.')
   }
 
   return data

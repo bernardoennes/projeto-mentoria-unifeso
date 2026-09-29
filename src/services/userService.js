@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js'
+import { getRequestError } from './edgeFunctionError.js'
 
 export function maskCpf(cpf) {
   const digits = String(cpf ?? '').replace(/\D/g, '')
@@ -19,7 +20,7 @@ export async function updatePassword({ currentPassword, newPassword }) {
   })
 
   if (error) {
-    throw error
+    throw getRequestError(error, 'Não foi possível alterar a senha. Verifique a senha atual e tente novamente.')
   }
 }
 

@@ -7,10 +7,10 @@ import { canManageCondominium } from '../../../utils/permissions.js'
 
 function getQueryErrorMessage(error) {
   if (error?.code === '42501' || error?.status === 403) {
-    return 'O acesso a esta lista está bloqueado pelas políticas RLS do Supabase. Configure uma policy de leitura para esta organização e papel.'
+    return 'Não foi possível carregar os dados. Verifique suas permissões e tente novamente.'
   }
 
-  return error?.message ?? 'Não foi possível carregar os dados.'
+  return 'Não foi possível carregar os dados. Tente novamente.'
 }
 
 export function useSettingsPageState({ user, membership }) {

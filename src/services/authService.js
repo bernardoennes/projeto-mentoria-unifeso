@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js'
-import { getEdgeFunctionError } from './edgeFunctionError.js'
+import { getEdgeFunctionError, getRequestError } from './edgeFunctionError.js'
 
 function normalizeCpf(cpf) {
   return String(cpf ?? '').replace(/\D/g, '')
@@ -49,7 +49,10 @@ export async function registerFirstAccess({ cpf, password }) {
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error)
+    throw await getEdgeFunctionError(
+      error,
+      'Não foi possível concluir o primeiro acesso. Verifique os dados e tente novamente.',
+    )
   }
 
   return data
@@ -66,12 +69,11 @@ export async function loginUser(credentials) {
   })
 
   if (error) {
-    console.error('Erro no login:', error)
-    throw new Error('Erro ao realizar o login, cheque seu email e senha')
+    throw getRequestError(error, 'Não foi possível entrar. Confira o CPF e a senha e tente novamente.')
   }
 
   if (!data?.access_token || !data?.refresh_token) {
-    throw new Error('A autenticação não retornou os tokens da sessão.')
+    throw new Error('Não foi possível iniciar sua sessão. Tente novamente.')
   }
 
   const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
@@ -81,7 +83,7 @@ export async function loginUser(credentials) {
 
   if (sessionError || !sessionData?.session?.user?.id) {
     await supabase.auth.signOut()
-    throw new Error(sessionError?.message ?? 'Não foi possível iniciar a sessão autenticada.')
+    throw getRequestError(sessionError, 'Não foi possível iniciar sua sessão. Tente novamente.')
   }
 
   const { session } = sessionData
@@ -93,7 +95,7 @@ export async function loginUser(credentials) {
 
   if (profileError || !profile) {
     await supabase.auth.signOut()
-    throw new Error(profileError?.message ?? 'Não foi possível carregar o perfil do usuário.')
+    throw getRequestError(profileError, 'Não foi possível carregar seu perfil. Tente novamente.')
   }
 
   const { data: membership, error: membershipError } = await supabase
@@ -104,7 +106,7 @@ export async function loginUser(credentials) {
 
   if (membershipError || !membership) {
     await supabase.auth.signOut()
-    throw new Error(membershipError?.message ?? 'O usuário não possui vínculo com uma organização.')
+    throw getRequestError(membershipError, 'Não foi possível carregar seu acesso ao condomínio.')
   }
 
   return {

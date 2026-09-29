@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js'
-import { getEdgeFunctionError } from './edgeFunctionError.js'
+import { getEdgeFunctionError, getRequestError } from './edgeFunctionError.js'
 
 export const AREA_TYPE_LABELS = {
   SWIMMING_POOL: 'Piscina',
@@ -24,7 +24,7 @@ export async function fetchCommonAreas(organisationId) {
     .order('id')
 
   if (error) {
-    throw error
+    throw getRequestError(error, 'Não foi possível carregar as áreas comuns. Tente novamente.')
   }
 
   return data ?? []
@@ -48,7 +48,7 @@ export async function createCommonArea({
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error)
+    throw await getEdgeFunctionError(error, 'Não foi possível cadastrar a área comum. Tente novamente.')
   }
 
   return data
