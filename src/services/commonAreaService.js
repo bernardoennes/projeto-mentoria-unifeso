@@ -48,7 +48,7 @@ export async function createCommonArea({
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error, 'Não foi possível cadastrar a área comum. Tente novamente.')
+    throw getEdgeFunctionError(error, 'Não foi possível cadastrar a área comum. Tente novamente.')
   }
 
   return data

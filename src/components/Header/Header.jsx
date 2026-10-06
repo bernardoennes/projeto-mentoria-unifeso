@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { useTheme } from '../../context/ThemeContext.jsx'
 import styles from './Header.module.css'
 
-export default function Header({ title, subtitle, userName, accessType, onLogout }) {
+export default function Header({ title, subtitle, userName, accessType }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const navigate = useNavigate()
   const { signOut } = useAuth()
@@ -14,13 +14,7 @@ export default function Header({ title, subtitle, userName, accessType, onLogout
 
   const handleLogout = async () => {
     setIsProfileOpen(false)
-
-    if (onLogout) {
-      await onLogout()
-    } else {
-      await signOut()
-    }
-
+    await signOut()
     navigate('/login', { replace: true })
   }
 

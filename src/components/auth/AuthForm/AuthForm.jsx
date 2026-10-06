@@ -20,7 +20,7 @@ const initialFormState = {
 }
 
 const passwordRules = [
-  { key: 'length', label: 'Até 8 caracteres', test: (value) => value.length >= 8 },
+  { key: 'length', label: 'Pelo menos 8 caracteres', test: (value) => value.length >= 8 },
   { key: 'number', label: 'Conter número', test: (value) => /\d/.test(value) },
   { key: 'special', label: 'Conter caractere especial', test: (value) => /[^A-Za-z0-9]/.test(value) },
 ]
@@ -147,7 +147,7 @@ export default function AuthForm({ mode = 'login' }) {
 
       persistLoginLockState(nextLockState)
       setLockoutSeconds(getRemainingLockSeconds(nextLockState.lockedUntil))
-      toast.error('Erro ao realizar o login, cheque seu email e senha. Conta bloqueada por 5 minutos.')
+      toast.error('Erro ao realizar o login, cheque seu CPF e senha. Conta bloqueada por 5 minutos.')
       return
     }
 
@@ -157,7 +157,7 @@ export default function AuthForm({ mode = 'login' }) {
     })
 
     setLockoutSeconds(0)
-    toast.error('Erro ao realizar o login, cheque seu email e senha')
+    toast.error('Erro ao realizar o login, cheque seu CPF e senha')
   }
 
   const handleSubmit = async (event) => {

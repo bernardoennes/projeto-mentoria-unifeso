@@ -49,7 +49,7 @@ export async function registerFirstAccess({ cpf, password }) {
   })
 
   if (error) {
-    throw await getEdgeFunctionError(
+    throw getEdgeFunctionError(
       error,
       'Não foi possível concluir o primeiro acesso. Verifique os dados e tente novamente.',
     )

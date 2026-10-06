@@ -2,7 +2,7 @@ import {
   CalendarCheck,
   CurrencyDollar,
   House,
-  Megaphone,
+  Package,
   Question,
   UsersThree,
 } from '@phosphor-icons/react'
@@ -12,7 +12,7 @@ const iconRegistry = {
   CalendarCheck,
   UsersThree,
   CurrencyDollar,
-  Megaphone,
+  Package,
 }
 
 export function resolvePhosphorIcon(iconName) {

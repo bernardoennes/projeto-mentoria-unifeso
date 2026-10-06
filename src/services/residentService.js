@@ -47,7 +47,7 @@ export async function provisionCondomino({ name, cpf, organisationId, block, uni
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error, 'Não foi possível cadastrar o morador. Tente novamente.')
+    throw getEdgeFunctionError(error, 'Não foi possível cadastrar o morador. Tente novamente.')
   }
 
   return data
@@ -62,7 +62,7 @@ export async function removeCondomino({ organisationId, userId }) {
   })
 
   if (error) {
-    throw await getEdgeFunctionError(error, 'Não foi possível remover o morador. Tente novamente.')
+    throw getEdgeFunctionError(error, 'Não foi possível remover o morador. Tente novamente.')
   }
 
   return data
