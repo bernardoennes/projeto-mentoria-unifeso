@@ -37,6 +37,10 @@
   --scrollbar-thumb: #505753;
   --scrollbar-track: #17181d;
   --overlay-bg: rgba(10, 10, 12, 0.36);
+  --toastify-color-light: var(--surface-raised);
+  --toastify-color-dark: var(--surface-raised);
+  --toastify-text-color-light: var(--text-primary);
+  --toastify-text-color-dark: var(--text-primary);
 }
 
 :root[data-theme='light'] {
@@ -78,6 +82,13 @@
   --scrollbar-thumb: #aab3a1;
   --scrollbar-track: #f3f5f0;
   --overlay-bg: rgba(25, 34, 26, 0.24);
+}
+
+html[data-theme] {
+  --toastify-color-light: var(--surface-raised);
+  --toastify-color-dark: var(--surface-raised);
+  --toastify-text-color-light: var(--text-primary);
+  --toastify-text-color-dark: var(--text-primary);
 }
 
 body {

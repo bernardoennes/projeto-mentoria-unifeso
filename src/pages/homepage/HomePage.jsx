@@ -1,78 +1,66 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Bell, WarningCircle } from '@phosphor-icons/react'
 import Header from '../../components/Header/Header.jsx'
+import MonthlyCalendar from '../../components/MonthlyCalendar/MonthlyCalendar.jsx'
 import Sidebar from '../../components/Sidebar/Sidebar.jsx'
-import ToolCard from '../../components/ToolCard/ToolCard.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
+import {
+  getCalendarReservations,
+  getNationalHolidays,
+  subscribeToCalendarReservations,
+} from '../../services/calendarService.js'
 import styles from './HomePage.module.css'
-
-const navItems = [
-  { id: 'home', label: 'Home', iconName: 'House', path: '/' },
-  { id: 'reservas', label: 'Reservas', iconName: 'CalendarCheck', path: '/reservas' },
-  { id: 'moradores', label: 'Moradores', iconName: 'UsersThree' },
-  { id: 'financeiro', label: 'Financeiro', iconName: 'CurrencyDollar' },
-  { id: 'pacotes', label: 'Encomendas', iconName: 'Package' },
-]
-
-const navIconById = navItems.reduce((acc, item) => {
-  acc[item.id] = item.iconName
-  return acc
-}, {})
-
-const toolItems = [
-  {
-    id: 'moradores',
-    title: 'Moradores',
-    value: '120 cadastrados',
-    iconName: navIconById.moradores ?? 'UsersThree',
-  },
-  {
-    id: 'reservas',
-    title: 'Reservas hoje',
-    value: '08 confirmadas',
-    iconName: navIconById.reservas ?? 'CalendarCheck',
-  },
-  {
-    id: 'avisos',
-    title: 'Avisos',
-    value: '03 pendentes',
-    iconName: 'Megaphone',
-  },
-  {
-    id: 'pacotes',
-    title: 'Encomendas',
-    value: '05 aguardando retirada',
-    iconName: navIconById.pacotes ?? 'Package',
-  },
-  {
-    id: 'financeiro',
-    title: 'Taxa mensal',
-    value: '94% adimplencia',
-    iconName: navIconById.financeiro ?? 'CurrencyDollar',
-  },
-]
 
 export default function HomePage() {
   const { user, membership } = useAuth()
+  const organisationId = membership?.organisation_id
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
+  const [reservationState, setReservationState] = useState(() => ({
+    organisationId,
+    reservations: getCalendarReservations(organisationId),
+  }))
 
   const overlayClass = isSidebarExpanded ? ` ${styles.overlayVisible}` : ''
-  const userName = user?.name ?? 'Usuario'
-  const accessType = membership?.access_type ?? 'Nao definido'
+  const userName = user?.name ?? 'Morador'
+  const reservations = reservationState.organisationId === organisationId
+    ? reservationState.reservations
+    : getCalendarReservations(organisationId)
+  const holidays = useMemo(() => [
+    ...getNationalHolidays(new Date().getFullYear()),
+    ...getNationalHolidays(new Date().getFullYear() + 1),
+  ], [])
+  const calendarEvents = useMemo(() => [
+    ...holidays,
+    ...reservations.map((reservation) => ({
+      ...reservation,
+      id: `reservation-${reservation.id}`,
+      title: reservation.areaName,
+      type: 'reservation',
+      detail: `${reservation.startTime} · Reserva de área comum`,
+    })),
+  ].sort((first, second) => (
+    first.date.localeCompare(second.date)
+    || String(first.startTime ?? '').localeCompare(String(second.startTime ?? ''))
+  )), [holidays, reservations])
+  useEffect(() => {
+    return subscribeToCalendarReservations(organisationId, (nextReservations) => {
+      setReservationState({ organisationId, reservations: nextReservations })
+    })
+  }, [organisationId])
 
   return (
     <div className={styles.pageShell}>
       <Header
-        title="Condominio"
+        title="Condomínio"
         subtitle="Sistema de Gerenciamento"
         userName={userName}
-        accessType={accessType}
+        accessType={membership?.access_type ?? 'Não definido'}
       />
 
       <div className={styles.pageBody}>
         <div className={`${styles.pageOverlay}${overlayClass}`} />
 
         <Sidebar
-          items={navItems}
           expanded={isSidebarExpanded}
           onExpand={() => setIsSidebarExpanded(true)}
           onCollapse={() => setIsSidebarExpanded(false)}
@@ -80,20 +68,29 @@ export default function HomePage() {
         />
 
         <main className={styles.homeContent}>
-          <h1>Home</h1>
-          <p>
-            Usuario atual: <strong>{userName}</strong> | Nivel: <strong>{accessType}</strong>
-          </p>
+          <div className={styles.welcomeBlock}>
+            <h1>Bem-vindo, {userName}</h1>
+            <p>Acompanhe os próximos compromissos do condomínio.</p>
+          </div>
 
-          <section className={styles.summaryGrid}>
-            {toolItems.map((tool) => (
-              <ToolCard
-                key={tool.id}
-                title={tool.title}
-                value={tool.value}
-                iconName={tool.iconName}
-              />
-            ))}
+          <section className={styles.dashboardGrid} aria-label="Resumo do condomínio">
+            <section className={styles.dashboardPanel}>
+              <header className={styles.panelHeading}>
+                <span className={styles.iconBadge}><Bell size={17} weight="bold" /></span>
+                <h2>Avisos</h2>
+              </header>
+              <p className={styles.implementationState}>Faltando implementação</p>
+            </section>
+
+            <MonthlyCalendar events={calendarEvents} />
+
+            <section className={styles.dashboardPanel}>
+              <header className={styles.panelHeading}>
+                <span className={styles.iconBadge}><WarningCircle size={17} weight="bold" /></span>
+                <h2>Ocorrências</h2>
+              </header>
+              <p className={styles.implementationState}>Faltando implementação</p>
+            </section>
           </section>
         </main>
       </div>
