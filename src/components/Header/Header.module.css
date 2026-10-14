@@ -1,5 +1,5 @@
 .header {
-  height: 72px;
+  height: 60px;
   background: var(--header-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -8,21 +8,55 @@
   padding: 0 24px;
   position: relative;
   z-index: 50;
+  color: var(--header-text);
 }
+
 .brandBlock {
   display: flex;
-  flex-direction: column;
-  line-height: 1.15;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.2;
+}
+
+.brandIcon {
+  flex: 0 0 auto;
+  color: var(--header-text);
 }
 
 .brandBlock strong {
-  font-size: 18px;
-  letter-spacing: 0.2px;
+  display: block;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 .brandBlock span {
+  display: block;
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--header-muted);
+}
+
+.mobileMenuTrigger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--nav-card-border);
+  border-radius: 9px;
+  background: var(--nav-card-bg);
+  color: var(--nav-icon-color);
+  cursor: pointer;
+}
+
+.mobileMenuTrigger:hover {
+  background: var(--nav-card-hover);
+}
+
+.mobileMenuTrigger:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
 }
 
 .headerActions {
@@ -36,33 +70,23 @@
   position: relative;
 }
 
-.profileTrigger {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  background: var(--control-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 9px;
-  cursor: pointer;
-  color: var(--text-primary);
-}
-
+.profileTrigger,
 .themeTrigger {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--border-color);
+  padding: 0;
+  border: 1px solid var(--nav-card-border);
   border-radius: 9px;
-  background: var(--control-bg);
-  color: var(--text-primary);
+  background: var(--nav-card-bg);
+  color: var(--nav-icon-color);
   cursor: pointer;
 }
 
 .profileTrigger:hover,
 .themeTrigger:hover {
-  background: var(--control-hover);
+  background: var(--nav-card-hover);
 }
 
 .profileTrigger:focus-visible,
@@ -71,48 +95,42 @@
   outline-offset: 2px;
 }
 
-.profileMenu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  display: flex;
-  flex-direction: column;
-  width: 180px;
-  background: var(--surface-raised);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
-  overflow: hidden;
-}
-
-.menuButton,
-.menuButtonDanger {
-  border: none;
-  background: transparent;
-  color: var(--text-primary);
-  text-align: left;
-  padding: 12px 14px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.menuButton:hover,
-.menuButtonDanger:hover {
-  background: var(--control-hover);
-}
-
-.menuButtonDanger {
-  color: var(--danger-text);
-  border-top: 1px solid var(--border-color);
-}
-
 @media (max-width: 900px) {
   .header {
-    padding: 0 14px;
+    padding: 0 16px;
   }
 
   .headerActions {
     gap: 8px;
   }
+}
 
+@media (max-width: 700px) {
+  .header {
+    height: 56px;
+    padding: 0 12px 0 16px;
+  }
+
+  .brandBlock {
+    gap: 8px;
+  }
+
+  .brandBlock strong {
+    font-size: 17px;
+  }
+
+  .brandIcon {
+    width: 21px;
+    height: 21px;
+  }
+
+  .mobileMenuTrigger {
+    display: flex;
+    width: 38px;
+    height: 38px;
+  }
+
+  .hasNavigationToggle .headerActions {
+    display: none;
+  }
 }

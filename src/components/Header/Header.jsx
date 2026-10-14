@@ -1,21 +1,29 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Moon, Sun, UserCircle } from '@phosphor-icons/react'
+import { House, List, Moon, Sun, UserCircle, X } from '@phosphor-icons/react'
 import ProfileModal from '../ProfileModal/ProfileModal.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useTheme } from '../../context/ThemeContext.jsx'
 import styles from './Header.module.css'
 
-export default function Header({ title, subtitle, userName, accessType }) {
+export default function Header({
+  userName,
+  accessType,
+  navigationExpanded,
+  onNavigationToggle,
+}) {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const navigate = useNavigate()
   const { signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const mobileMenuOpen = navigationExpanded ?? false
 
-  const handleLogout = async () => {
-    setIsProfileOpen(false)
-    await signOut()
-    navigate('/login', { replace: true })
+  const toggleMobileMenu = () => {
+    onNavigationToggle?.(!mobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    onNavigationToggle?.(false)
   }
 
   const handleOpenSettings = () => {
@@ -23,13 +31,40 @@ export default function Header({ title, subtitle, userName, accessType }) {
     navigate('/settings?section=account')
   }
 
-  return (
-    <header className={styles.header}>
-      <div className={styles.brandBlock}>
-        <strong>{title}</strong>
-        <span>{subtitle}</span>
-      </div>
+  const handleLogout = async () => {
+    setIsProfileOpen(false)
+    await signOut()
+    navigate('/login', { replace: true })
+  }
 
+  return (
+    <header
+      className={[
+        styles.header,
+        onNavigationToggle ? styles.hasNavigationToggle : '',
+        mobileMenuOpen ? styles.mobileMenuOpen : '',
+      ].filter(Boolean).join(' ')}
+    >
+      <div className={styles.brandBlock}>
+        <House className={styles.brandIcon} size={23} weight="fill" aria-hidden="true" />
+        <div>
+          <strong>Domus</strong>
+        </div>
+      </div>
+      {onNavigationToggle && (
+        <button
+          type="button"
+          className={styles.mobileMenuTrigger}
+          aria-label={mobileMenuOpen ? 'Fechar navegação' : 'Abrir navegação'}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="primary-navigation"
+          onClick={toggleMobileMenu}
+        >
+          {mobileMenuOpen
+            ? <X size={21} weight="bold" aria-hidden="true" />
+            : <List size={21} weight="bold" aria-hidden="true" />}
+        </button>
+      )}
       <div className={styles.headerActions}>
         <div className={styles.profileWrapper}>
           <button
@@ -37,11 +72,14 @@ export default function Header({ title, subtitle, userName, accessType }) {
             className={styles.profileTrigger}
             aria-label="Abrir menu do perfil"
             title="Perfil"
-            onClick={() => setIsProfileOpen((current) => !current)}
+            aria-expanded={isProfileOpen}
+            onClick={() => {
+              closeMobileMenu()
+              setIsProfileOpen((current) => !current)
+            }}
           >
             <UserCircle size={22} weight="regular" aria-hidden="true" />
           </button>
-
           {isProfileOpen && (
             <ProfileModal
               userName={userName}
