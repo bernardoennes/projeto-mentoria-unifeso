@@ -71,8 +71,6 @@ export default function SettingsPage() {
   return (
     <div className={styles.pageShell}>
       <Header
-        title="Configurações"
-        subtitle="Gestão da conta e condomínio"
         userName={profile?.name ?? 'Usuário'}
         accessType={profile?.access_type ?? 'Não definido'}
       />

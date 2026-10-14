@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { CalendarBlank, CaretLeft, CaretRight, Funnel, Plus } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import Header from '../../components/Header/Header.jsx'
@@ -55,7 +55,11 @@ export default function CalendarPage() {
   const [areas, setAreas] = useState([])
   const [areasError, setAreasError] = useState('')
   const [isLoadingAreas, setIsLoadingAreas] = useState(true)
-  const [selectedDate, setSelectedDate] = useState(() => getDateKey(new Date()))
+  const [searchParams] = useSearchParams()
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const dateParam = searchParams.get('date')
+    return /^\d{4}-\d{2}-\d{2}$/.test(dateParam ?? '') ? dateParam : getDateKey(new Date())
+  })
   const [selectedAreaId, setSelectedAreaId] = useState('')
   const [selectedStart, setSelectedStart] = useState('')
   const [selectedEnd, setSelectedEnd] = useState('')
@@ -234,27 +238,33 @@ export default function CalendarPage() {
   return (
     <div className={styles.pageShell}>
       <Header
-        title="Condomínio"
-        subtitle="Sistema de Gerenciamento"
         userName={profile?.name ?? 'Usuário'}
         accessType={profile?.access_type ?? 'Não definido'}
+        navigationExpanded={isSidebarExpanded}
+        onNavigationToggle={setIsSidebarExpanded}
       />
 
       <div className={styles.pageBody}>
-        <div className={`${styles.pageOverlay}${overlayClass}`} />
+        <button
+          type="button"
+          className={`${styles.pageOverlay}${overlayClass}`}
+          aria-label="Fechar navegação"
+          aria-hidden={!isSidebarExpanded}
+          tabIndex={isSidebarExpanded ? 0 : -1}
+          onClick={() => setIsSidebarExpanded(false)}
+        />
         <Sidebar
           expanded={isSidebarExpanded}
           onExpand={() => setIsSidebarExpanded(true)}
           onCollapse={() => setIsSidebarExpanded(false)}
           activeId="reservas"
+          userName={profile?.name ?? 'Usuário'}
+          accessType={profile?.access_type ?? 'Não definido'}
         />
 
         <main className={styles.content}>
           <div className={styles.pageHeading}>
-            <div>
-              <h1>Calendário</h1>
-              <p>Consulte a semana e reserve uma área comum.</p>
-            </div>
+            <h1>Calendário</h1>
             <div className={styles.calendarControls}>
               <button
                 type="button"

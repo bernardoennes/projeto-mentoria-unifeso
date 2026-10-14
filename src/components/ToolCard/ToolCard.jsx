@@ -17,11 +17,13 @@ export default function ToolCard({
     <button
       type="button"
       className={`${styles.navCard}${navExpandedClass}${navActiveClass}`}
+      aria-label={title}
+      title={title}
       onClick={onClick}
       disabled={disabled}
     >
       <span className={styles.navIcon} aria-hidden="true">
-        <CardIcon size={16} weight="bold" />
+        <CardIcon size={19} weight="bold" />
       </span>
       <span className={styles.navLabel}>{title}</span>
     </button>

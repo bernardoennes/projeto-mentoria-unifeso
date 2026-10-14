@@ -27,22 +27,32 @@
 }
 
 .navCard {
-  border: 0;
-  background: var(--surface-muted);
-  color: var(--text-primary);
-  border-radius: 999px;
-  height: 40px;
+  border: 1px solid var(--nav-card-border);
+  background: var(--nav-card-bg);
+  color: var(--nav-card-text);
+  border-radius: 9px;
+  height: 46px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  gap: 10px;
+  justify-content: flex-start;
+  padding: 0 4px;
+  gap: 8px;
   width: 100%;
   cursor: pointer;
-  transition: background-color 180ms ease;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .navCard:hover {
-  background: var(--control-hover);
+  background: var(--nav-card-hover);
+}
+
+.navCard:active {
+  transform: scale(0.98);
+}
+
+.navCard:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
 }
 
 .navCard:disabled {
@@ -52,18 +62,24 @@
 
 .navActive,
 .navActive:hover {
-  background: var(--accent-soft-bg);
-  color: var(--accent-soft-text);
+  background: var(--nav-card-active);
+  border-color: transparent;
+  color: #ffffff;
 }
 
 .navIcon {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: var(--surface-raised);
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  border-radius: 6px;
+  color: var(--nav-icon-color);
+}
+
+.navActive .navIcon {
+  background: var(--nav-active-icon-bg);
+  color: var(--nav-active-icon-color);
 }
 
 .navLabel {
@@ -76,4 +92,22 @@
 .navExpanded .navLabel {
   opacity: 1;
   transform: translateX(0);
+}
+
+.navCard:not(.navExpanded) {
+  justify-content: center;
+  width: 48px;
+  margin-inline: auto;
+  padding: 0;
+}
+
+.navCard:not(.navExpanded) .navLabel {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navCard,
+  .navLabel {
+    transition: none;
+  }
 }

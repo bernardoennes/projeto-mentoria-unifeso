@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CalendarBlank, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import { getDateKey, getDayLabel, getMonthCells, getMonthLabel } from '../../utils/calendarUtils.js'
 import styles from './MonthlyCalendar.module.css'
@@ -6,11 +7,12 @@ import styles from './MonthlyCalendar.module.css'
 const weekdays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
 
 export default function MonthlyCalendar({ events = [] }) {
+  const navigate = useNavigate()
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const today = new Date()
     return new Date(today.getFullYear(), today.getMonth(), 1)
   })
-  const [selectedDate, setSelectedDate] = useState(() => getDateKey(new Date()))
+  const [selectedDate, setSelectedDate] = useState(null)
 
   const todayKey = getDateKey(new Date())
   const monthCells = getMonthCells(visibleMonth)
@@ -21,25 +23,35 @@ export default function MonthlyCalendar({ events = [] }) {
     return eventsByDay
   }, new Map()), [events])
   const upcomingEvents = useMemo(() => {
-    const throughDate = new Date(`${selectedDate}T12:00:00`)
-    throughDate.setDate(throughDate.getDate() + 30)
-    const throughDateKey = getDateKey(throughDate)
+    if (selectedDate) {
+      return events.filter((event) => event.date === selectedDate)
+    }
 
-    return events
-      .filter((event) => event.date >= selectedDate && event.date <= throughDateKey)
-      .slice(0, 4)
-  }, [events, selectedDate])
+    const endOfWeek = new Date(`${todayKey}T12:00:00`)
+    endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()))
+    const endOfWeekKey = getDateKey(endOfWeek)
+
+    return events.filter((event) => event.date >= todayKey && event.date <= endOfWeekKey)
+  }, [events, selectedDate, todayKey])
 
   const changeMonth = (offset) => {
-    const nextMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1)
-    setVisibleMonth(nextMonth)
-    setSelectedDate(getDateKey(nextMonth))
+    setVisibleMonth(new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1))
+    setSelectedDate(null)
   }
 
   const selectToday = () => {
     const today = new Date()
     setVisibleMonth(new Date(today.getFullYear(), today.getMonth(), 1))
-    setSelectedDate(getDateKey(today))
+    setSelectedDate(null)
+  }
+
+  const toggleDate = (dateKey) => {
+    if (selectedDate === dateKey) {
+      navigate(`/reservas?date=${dateKey}`)
+      return
+    }
+
+    setSelectedDate(dateKey)
   }
 
   return (
@@ -52,10 +64,10 @@ export default function MonthlyCalendar({ events = [] }) {
       </header>
 
       <div className={styles.monthBar}>
+        <strong>{getMonthLabel(visibleMonth)}</strong>
         <button type="button" aria-label="Mês anterior" onClick={() => changeMonth(-1)}>
           <CaretLeft size={15} weight="bold" color="currentColor" aria-hidden="true" />
         </button>
-        <strong>{getMonthLabel(visibleMonth)}</strong>
         <button type="button" aria-label="Próximo mês" onClick={() => changeMonth(1)}>
           <CaretRight size={15} weight="bold" color="currentColor" aria-hidden="true" />
         </button>
@@ -90,7 +102,7 @@ export default function MonthlyCalendar({ events = [] }) {
               className={dayClasses}
               aria-label={`${new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full' }).format(date)}${eventsForDay.length ? `, ${eventsForDay.length} evento(s)` : ''}`}
               aria-pressed={isSelected}
-              onClick={() => setSelectedDate(dateKey)}
+              onClick={() => toggleDate(dateKey)}
             >
               <span>{date.getDate()}</span>
               {eventsForDay.length > 0 && (
@@ -109,16 +121,25 @@ export default function MonthlyCalendar({ events = [] }) {
       </div>
 
       <div className={styles.upcomingSection}>
-        <h3>Próximos eventos</h3>
+        <div className={styles.upcomingHeading}>
+          <h3>{selectedDate ? 'Eventos do dia' : 'Próximos eventos'}</h3>
+          {selectedDate && (
+            <button type="button" className={styles.clearSelection} onClick={() => setSelectedDate(null)}>
+              Limpar seleção
+            </button>
+          )}
+        </div>
         {upcomingEvents.length === 0 ? (
-          <p className={styles.emptyEvents}>Nenhum feriado ou reserva nos próximos 30 dias.</p>
+          <p className={styles.emptyEvents}>
+            {selectedDate ? 'Nenhum feriado ou reserva neste dia.' : 'Nenhum feriado ou reserva no resto da semana.'}
+          </p>
         ) : (
           <ul className={styles.eventList}>
             {upcomingEvents.map((event) => (
               <li className={styles.eventItem} key={event.id}>
                 <span className={`${styles.eventDot} ${event.type === 'holiday' ? styles.holidayMarker : styles.reservationMarker}`} />
                 <div>
-                  <strong>{getDayLabel(event.date, todayKey, selectedDate)} · {event.title}</strong>
+                  <strong>{getDayLabel(event.date, todayKey, selectedDate ?? todayKey)} · {event.title}</strong>
                   <span>{event.type === 'holiday' ? 'Feriado nacional' : event.detail}</span>
                 </div>
               </li>

@@ -1,87 +1,125 @@
 :root {
   color-scheme: dark;
-  --app-bg: #111214;
-  --header-bg: #0f0f10;
-  --surface: #17181d;
-  --surface-raised: #1d1e23;
-  --surface-muted: #202228;
-  --surface-inset: #111318;
-  --control-bg: #17171a;
-  --control-hover: #292b30;
-  --text-primary: #f3f3f3;
-  --text-secondary: #c1c5ce;
-  --text-muted: #a7acb7;
-  --border-color: #2e2f36;
-  --border-strong: #3a425c;
-  --focus-color: #8ba2ff;
-  --accent-bg: #263354;
-  --accent-text: #dfe7ff;
-  --danger-text: #ff9e9e;
-  --danger-border: #3a2d2d;
-  --danger-bg: #321c20;
-  --danger-action-bg: #7c2f3b;
-  --input-bg: #111318;
-  --input-border: #353942;
-  --primary-action-bg: #5d7efb;
-  --primary-action-hover: #4f6ee5;
+  --app-bg: #111a16;
+  --header-bg: #244f40;
+  --header-text: #ffffff;
+  --header-muted: #d3e2d8;
+  --nav-bg: #366b56;
+  --nav-card-bg: #f7f8f4;
+  --nav-card-hover: #eef2ec;
+  --nav-card-active: #e99068;
+  --nav-card-border: #d9e2d9;
+  --nav-card-text: #315f4c;
+  --nav-icon-color: #e99068;
+  --nav-active-icon-bg: transparent;
+  --nav-active-icon-color: #ffffff;
+  --surface: #19241f;
+  --surface-raised: #202d27;
+  --surface-muted: #293831;
+  --surface-inset: #141d19;
+  --control-bg: #293831;
+  --control-hover: #35483e;
+  --text-primary: #edf3ee;
+  --text-secondary: #c5d2c9;
+  --text-muted: #9dad9f;
+  --border-color: #36483d;
+  --border-strong: #52695a;
+  --focus-color: #c1dfc8;
+  --accent-bg: #304d3e;
+  --accent-text: #e0eee2;
+  --danger-text: #ffaaa0;
+  --danger-border: #61433e;
+  --danger-bg: #382824;
+  --danger-action-bg: #9b5147;
+  --input-bg: #141d19;
+  --input-border: #46594c;
+  --primary-action-bg: #557f66;
+  --primary-action-hover: #649274;
   --primary-action-text: #ffffff;
-  --accent-soft-bg: #243356;
-  --accent-soft-text: #dfe7ff;
-  --selection-bg: #263354;
-  --selection-border: #647fe0;
-  --success-text: #5fe3b0;
-  --success-border: #32cd96;
-  --error-text: #ff9b9b;
-  --error-border-color: #ff7474;
-  --link-color: #82bbff;
-  --scrollbar-thumb: #505753;
-  --scrollbar-track: #17181d;
-  --overlay-bg: rgba(10, 10, 12, 0.36);
+  --accent-soft-bg: #304d3e;
+  --accent-soft-text: #d7ead9;
+  --selection-bg: #304d3e;
+  --selection-border: #91b89a;
+  --success-text: #9dd5a8;
+  --success-border: #75b783;
+  --error-text: #ffaaa0;
+  --error-border-color: #d47b70;
+  --link-color: #a9d6b1;
+  --scrollbar-thumb: #506457;
+  --scrollbar-track: #19241f;
+  --overlay-bg: rgba(9, 17, 13, 0.5);
+  --pattern-dot: #7b9b83;
   --toastify-color-light: var(--surface-raised);
   --toastify-color-dark: var(--surface-raised);
   --toastify-text-color-light: var(--text-primary);
   --toastify-text-color-dark: var(--text-primary);
 }
 
+:root:not([data-theme='light']) {
+  --nav-bg: #1e4736;
+  --nav-card-bg: #26382e;
+  --nav-card-hover: #31483a;
+  --nav-card-active: #cc7048;
+  --nav-card-border: #536b59;
+  --nav-card-text: #ffffff;
+  --nav-icon-color: #ffb184;
+  --nav-active-icon-bg: transparent;
+  --nav-active-icon-color: #ffffff;
+  --nav-active-icon-bg: #cc7048;
+  --nav-active-icon-color: #ffffff;
+}
+
 :root[data-theme='light'] {
   color-scheme: light;
-  --app-bg: #f3f5f0;
-  --header-bg: #ffffff;
+  --app-bg: #f0f3f7;
+  --header-bg: #366b56;
+  --header-text: #ffffff;
+  --header-muted: #dce9df;
+  --nav-bg: #366b56;
+  --nav-card-bg: #f7f8f4;
+  --nav-card-hover: #eef2ec;
+  --nav-card-active: #e99068;
+  --nav-card-border: #d9e2d9;
+  --nav-card-text: #315f4c;
+  --nav-icon-color: #e99068;
+  --nav-active-icon-bg: transparent;
+  --nav-active-icon-color: #ffffff;
   --surface: #ffffff;
-  --surface-raised: #ffffff;
-  --surface-muted: #edf1e9;
-  --surface-inset: #f5f7f3;
-  --control-bg: #f7f9f5;
-  --control-hover: #e8eee4;
-  --text-primary: #263028;
-  --text-secondary: #465047;
-  --text-muted: #687265;
-  --border-color: #d4dbd0;
-  --border-strong: #a6b09f;
-  --focus-color: #58764f;
-  --accent-bg: #e2eddb;
-  --accent-text: #344b30;
-  --danger-text: #a33e37;
-  --danger-border: #e2c6c3;
-  --danger-bg: #f9e8e7;
-  --danger-action-bg: #a33e37;
+  --surface-raised: #f8fafc;
+  --surface-muted: #e9eff3;
+  --surface-inset: #f1f5f7;
+  --control-bg: #f5f8fa;
+  --control-hover: #e5edf0;
+  --text-primary: #27352e;
+  --text-secondary: #4c5b53;
+  --text-muted: #718078;
+  --border-color: #dce5e8;
+  --border-strong: #cbd8d9;
+  --focus-color: #366b56;
+  --accent-bg: #e3eee7;
+  --accent-text: #2f5f4c;
+  --danger-text: #a3473e;
+  --danger-border: #efd0ca;
+  --danger-bg: #fff0ed;
+  --danger-action-bg: #ad594e;
   --input-bg: #ffffff;
-  --input-border: #c7ccbf;
-  --primary-action-bg: #58764f;
-  --primary-action-hover: #45613d;
+  --input-border: #cbd8d9;
+  --primary-action-bg: #366b56;
+  --primary-action-hover: #285743;
   --primary-action-text: #ffffff;
-  --accent-soft-bg: #e8eee4;
-  --accent-soft-text: #344b30;
-  --selection-bg: #e2eddb;
-  --selection-border: #829b76;
-  --success-text: #36724f;
-  --success-border: #71a986;
-  --error-text: #a33e37;
-  --error-border-color: #c77973;
-  --link-color: #425e39;
-  --scrollbar-thumb: #aab3a1;
-  --scrollbar-track: #f3f5f0;
-  --overlay-bg: rgba(25, 34, 26, 0.24);
+  --accent-soft-bg: #e5efe7;
+  --accent-soft-text: #315f4c;
+  --selection-bg: #e5efe7;
+  --selection-border: #74a187;
+  --success-text: #357853;
+  --success-border: #75b18a;
+  --error-text: #a3473e;
+  --error-border-color: #cc766b;
+  --link-color: #315f4c;
+  --scrollbar-thumb: #b5c4c1;
+  --scrollbar-track: #f0f3f7;
+  --overlay-bg: rgba(23, 41, 32, 0.3);
+  --pattern-dot: #98aaa0;
 }
 
 html[data-theme] {
@@ -96,7 +134,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--app-bg);
   color: var(--text-primary);
-  transition: background-color 180ms ease, color 180ms ease;
+  transition: background-color 220ms ease, color 220ms ease;
 }
 
 #root {
@@ -105,4 +143,19 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+button {
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

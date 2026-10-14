@@ -25,10 +25,12 @@ export default function HomePage() {
   const reservations = reservationState.organisationId === organisationId
     ? reservationState.reservations
     : getCalendarReservations(organisationId)
+
   const holidays = useMemo(() => [
     ...getNationalHolidays(new Date().getFullYear()),
     ...getNationalHolidays(new Date().getFullYear() + 1),
   ], [])
+
   const calendarEvents = useMemo(() => [
     ...holidays,
     ...reservations.map((reservation) => ({
@@ -42,6 +44,7 @@ export default function HomePage() {
     first.date.localeCompare(second.date)
     || String(first.startTime ?? '').localeCompare(String(second.startTime ?? ''))
   )), [holidays, reservations])
+
   useEffect(() => {
     return subscribeToCalendarReservations(organisationId, (nextReservations) => {
       setReservationState({ organisationId, reservations: nextReservations })
@@ -51,30 +54,38 @@ export default function HomePage() {
   return (
     <div className={styles.pageShell}>
       <Header
-        title="Condomínio"
-        subtitle="Sistema de Gerenciamento"
         userName={userName}
         accessType={membership?.access_type ?? 'Não definido'}
+        navigationExpanded={isSidebarExpanded}
+        onNavigationToggle={setIsSidebarExpanded}
       />
 
       <div className={styles.pageBody}>
-        <div className={`${styles.pageOverlay}${overlayClass}`} />
+        <button
+          type="button"
+          className={`${styles.pageOverlay}${overlayClass}`}
+          aria-label="Fechar navegação"
+          aria-hidden={!isSidebarExpanded}
+          tabIndex={isSidebarExpanded ? 0 : -1}
+          onClick={() => setIsSidebarExpanded(false)}
+        />
 
         <Sidebar
           expanded={isSidebarExpanded}
           onExpand={() => setIsSidebarExpanded(true)}
           onCollapse={() => setIsSidebarExpanded(false)}
           activeId="home"
+          userName={userName}
+          accessType={membership?.access_type ?? 'Não definido'}
         />
 
         <main className={styles.homeContent}>
           <div className={styles.welcomeBlock}>
-            <h1>Bem-vindo, {userName}</h1>
-            <p>Acompanhe os próximos compromissos do condomínio.</p>
+            <h1>Olá, {userName}!</h1>
           </div>
 
           <section className={styles.dashboardGrid} aria-label="Resumo do condomínio">
-            <section className={styles.dashboardPanel}>
+            <section className={`${styles.dashboardPanel} ${styles.noticesPanel}`}>
               <header className={styles.panelHeading}>
                 <span className={styles.iconBadge}><Bell size={17} weight="bold" /></span>
                 <h2>Avisos</h2>
@@ -82,9 +93,11 @@ export default function HomePage() {
               <p className={styles.implementationState}>Faltando implementação</p>
             </section>
 
-            <MonthlyCalendar events={calendarEvents} />
+            <div className={styles.calendarGridItem}>
+              <MonthlyCalendar events={calendarEvents} />
+            </div>
 
-            <section className={styles.dashboardPanel}>
+            <section className={`${styles.dashboardPanel} ${styles.occurrencesPanel}`}>
               <header className={styles.panelHeading}>
                 <span className={styles.iconBadge}><WarningCircle size={17} weight="bold" /></span>
                 <h2>Ocorrências</h2>

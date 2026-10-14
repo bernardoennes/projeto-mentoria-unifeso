@@ -1,5 +1,6 @@
 .pageShell {
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   max-width: 100vw;
   overflow: hidden;
@@ -8,7 +9,7 @@
 }
 
 .pageBody {
-  height: calc(100vh - 72px);
+  height: calc(100% - 60px);
   width: 100%;
   max-width: 100%;
   position: relative;
@@ -20,12 +21,15 @@
   background: var(--overlay-bg);
   opacity: 0;
   pointer-events: none;
+  border: 0;
+  padding: 0;
   transition: opacity 220ms ease;
   z-index: 20;
 }
 
 .overlayVisible {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .content {
@@ -51,8 +55,9 @@
 .pageHeading h1 {
   margin: 0;
   color: var(--text-primary);
-  font-size: 32px;
-  line-height: 1.15;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
 }
 
 .pageHeading p {
@@ -120,6 +125,32 @@
 
 .filterButton {
   width: 42px;
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+}
+
+.content {
+  background-image: radial-gradient(var(--pattern-dot) 1.2px, transparent 1.3px);
+  background-size: 18px 18px;
+}
+
+.dayHeader.todayHeader {
+  background: var(--selection-bg);
+}
+
+.todayHeader span {
+  color: var(--accent-soft-text);
+}
+
+.reservationForm .submitButton {
+  background: var(--nav-card-active);
+  border-color: transparent;
+  color: #fff;
+}
+
+.calendarPanel,
+.reservationPanel {
+  border-radius: 14px;
 }
 
 .filterPopover {
@@ -482,6 +513,16 @@
 
   .calendarViewport {
     max-height: 68vh;
+  }
+}
+
+@media (max-width: 700px) {
+  .pageBody {
+    height: calc(100% - 56px);
+  }
+
+  .content {
+    padding: 16px 14px 22px;
   }
 }
 

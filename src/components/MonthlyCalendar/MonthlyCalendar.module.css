@@ -1,12 +1,14 @@
 .calendarPanel {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   min-width: 0;
-  min-height: 620px;
-  padding: 20px 18px;
+  min-height: 0;
+  padding: 16px;
   border: 1px solid var(--border-strong);
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--surface-raised);
+  box-shadow: 0 3px 12px rgba(36, 62, 49, 0.04);
 }
 
 .panelHeading {
@@ -27,29 +29,29 @@
 
 .iconBadge {
   display: grid;
-  flex: 0 0 28px;
+  flex: 0 0 32px;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  background: var(--accent-soft-bg);
-  color: var(--accent-soft-text);
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--nav-card-active);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--nav-card-active);
 }
 
 .monthBar {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) 28px auto;
+  grid-template-columns: minmax(0, 1fr) 26px 26px auto;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   min-height: 30px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .monthBar strong {
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -57,13 +59,13 @@
 .monthBar button {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: 0;
   border-radius: 7px;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
 }
 
@@ -73,9 +75,9 @@
 
 .monthBar .todayButton {
   width: auto;
-  padding: 0 8px;
+  padding: 0 4px 0 8px;
   color: var(--link-color);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -86,43 +88,50 @@
 }
 
 .weekdayHeader {
-  min-height: 23px;
+  min-height: 28px;
   align-items: center;
-  border-radius: 5px 5px 0 0;
+  border-radius: 8px;
   background: var(--surface-muted);
   color: var(--text-secondary);
 }
 
 .weekdayHeader span {
   text-align: center;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .monthGrid {
-  border-top: 1px solid var(--border-color);
-  border-left: 1px solid var(--border-color);
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-rows: repeat(6, minmax(30px, 1fr));
+  gap: 4px;
+  margin-top: 6px;
 }
 
 .dayButton,
 .emptyDay {
   min-width: 0;
-  height: 39px;
-  border-right: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  min-height: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.emptyDay {
+  border-color: transparent;
 }
 
 .dayButton {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 3px 1px;
-  background: var(--surface-raised);
+  padding: 0 1px 8px;
+  background: transparent;
   color: var(--text-primary);
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
   cursor: pointer;
 }
 
@@ -148,6 +157,10 @@
 }
 
 .eventMarkers {
+  position: absolute;
+  bottom: 7px;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,8 +186,9 @@
 }
 
 .upcomingSection {
+  flex: 0 0 auto;
   min-width: 0;
-  margin-top: 15px;
+  margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border-color);
 }
@@ -185,7 +199,34 @@
   font-size: 11px;
 }
 
+.upcomingHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+  margin-bottom: 10px;
+}
+
+.upcomingSection .upcomingHeading h3 {
+  margin: 0;
+}
+
+.clearSelection {
+  border: 0;
+  background: transparent;
+  color: var(--link-color);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
 .eventList {
+  height: 96px;
+  overflow-y: auto;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  align-content: start;
   display: grid;
   gap: 8px;
   margin: 0;
@@ -221,17 +262,24 @@
 
 .eventItem strong {
   color: var(--text-primary);
-  font-size: 10px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1.3;
 }
 
 .eventItem div span {
   color: var(--text-muted);
-  font-size: 9px;
+  font-size: 12px;
+}
+
+.upcomingSection h3 {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-size: 14px;
 }
 
 .emptyEvents {
+  height: 96px;
   margin: 0;
   color: var(--text-muted);
   font-size: 10px;
@@ -241,5 +289,12 @@
 @media (max-width: 900px) {
   .calendarPanel {
     min-height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dayButton,
+  .monthBar button {
+    transition: background-color 140ms ease, color 140ms ease;
   }
 }
