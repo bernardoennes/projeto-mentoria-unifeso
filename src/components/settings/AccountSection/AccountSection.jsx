@@ -1,17 +1,14 @@
 import { useState } from 'react'
-import { Eye, EyeSlash, LockKey } from '@phosphor-icons/react'
+import { Eye, EyeSlash, LockKey, SignOut } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
-import InfoField from '../InfoField/InfoField.jsx'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../context/AuthContext.jsx'
 import { updatePassword } from '../../../services/userService.js'
 import styles from './AccountSection.module.css'
 
-const accountFields = [
-  { label: 'Nome completo', key: 'name' },
-  { label: 'CPF', key: 'cpf' },
-  { label: 'Perfil de acesso', key: 'access_type' },
-]
-
 export default function AccountSection({ profile, hideTitleOnMobile = false }) {
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [visiblePasswords, setVisiblePasswords] = useState({})
   const [isSavingPassword, setIsSavingPassword] = useState(false)
@@ -55,6 +52,11 @@ export default function AccountSection({ profile, hideTitleOnMobile = false }) {
     }
   }
 
+  const handleLogout = async () => {
+    await signOut()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <div className={styles.pageContent}>
       <header className={styles.pageHeading}>
@@ -65,21 +67,20 @@ export default function AccountSection({ profile, hideTitleOnMobile = false }) {
         <div className={styles.avatar} aria-hidden="true">{initials}</div>
         <div className={styles.profileSummary}>
           <h2>{profile?.name ?? 'Usuário'}</h2>
-          <p>{profile?.access_type ?? 'Perfil não definido'}</p>
+          <div className={styles.profileDetails}>
+            <span>{profile?.access_type ?? 'Perfil não definido'}</span>
+            <span><strong>CPF:</strong> {profile?.cpf ?? 'Não informado'}</span>
+          </div>
         </div>
-      </section>
-
-      <section className={styles.sectionBlock}>
-        <h2 className={styles.sectionTitle}>Dados pessoais</h2>
-        <div className={styles.infoGrid}>
-          {accountFields.map((field) => (
-            <InfoField
-              key={field.key}
-              label={field.label}
-              value={profile?.[field.key] ?? 'Não informado'}
-            />
-          ))}
-        </div>
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={handleLogout}
+          aria-label="Sair da conta"
+          title="Sair da conta"
+        >
+          <SignOut size={19} weight="regular" aria-hidden="true" />
+        </button>
       </section>
 
       <section className={styles.securityCard}>

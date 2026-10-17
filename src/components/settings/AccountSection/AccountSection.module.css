@@ -15,7 +15,6 @@
 }
 
 .pageHeading p,
-.profileSummary p,
 .securityHeading p {
   margin: 5px 0 0;
   color: var(--text-muted);
@@ -38,6 +37,26 @@
   padding: 14px 18px;
 }
 
+.profileSummary {
+  flex: 1;
+  min-width: 0;
+}
+
+.profileDetails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.profileDetails strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
 .avatar {
   display: grid;
   flex: 0 0 42px;
@@ -53,23 +72,34 @@
 
 .profileSummary h2 {
   margin: 0;
+  overflow: hidden;
   font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.sectionBlock {
+.logoutButton {
   display: grid;
-  gap: 10px;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--danger-border);
+  border-radius: 9px;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  cursor: pointer;
+  transition: background-color 160ms ease;
 }
 
-.sectionTitle {
-  margin: 0;
-  font-size: 15px;
+.logoutButton:hover {
+  background: var(--danger-border);
 }
 
-.infoGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+.logoutButton:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
 }
 
 .securityCard {
@@ -178,7 +208,6 @@
 }
 
 @media (max-width: 900px) {
-  .infoGrid,
   .inlineFields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -193,7 +222,6 @@
     display: none;
   }
 
-  .infoGrid,
   .inlineFields {
     grid-template-columns: 1fr;
   }

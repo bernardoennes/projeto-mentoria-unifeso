@@ -20,9 +20,14 @@
 .content {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   overflow: auto;
   scrollbar-color: var(--scrollbar-thumb) transparent;
   scrollbar-width: thin;
+}
+
+.listContent {
+  overflow: hidden;
 }
 
 .loadingState {
@@ -47,12 +52,17 @@
   .settingsLayout {
     flex-direction: column;
     height: calc(100% - 56px);
+    min-height: 0;
     gap: 12px;
     padding: 12px 14px 20px;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .content {
-    overflow: visible;
+    width: 100%;
+  }
+
+  .listContent {
+    overflow: hidden;
   }
 }

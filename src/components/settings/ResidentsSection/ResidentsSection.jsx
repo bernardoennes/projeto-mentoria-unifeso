@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash } from '@phosphor-icons/react'
+import { MagnifyingGlass, Plus, Trash } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import CpfInput from '../../auth/CpfInput/CpfInput.jsx'
 import RemoveResidentModal from '../RemoveResidentModal/RemoveResidentModal.jsx'
@@ -28,7 +28,6 @@ export default function ResidentsSection({
   isRemoving = false,
 }) {
   const [form, setForm] = useState(initialForm)
-  const [isFormOpen, setIsFormOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortOrder, setSortOrder] = useState('asc')
   const [residentToRemove, setResidentToRemove] = useState(null)
@@ -69,7 +68,6 @@ export default function ResidentsSection({
     try {
       await onCreate({ ...form, cpf, unitNumber })
       setForm(initialForm)
-      setIsFormOpen(false)
       toast.success('Condômino cadastrado. A senha provisória não é exibida.')
     } catch (createError) {
       toast.error(createError.message)
@@ -97,29 +95,12 @@ export default function ResidentsSection({
         <div>
           <h1 className={hideTitleOnMobile ? styles.hideTitleOnMobile : undefined}>Moradores</h1>
         </div>
-        {canManage && (
-          <button
-            type="button"
-            className={styles.addButton}
-            aria-expanded={isFormOpen}
-            onClick={() => setIsFormOpen((current) => !current)}
-          >
-            <Plus size={16} weight="bold" aria-hidden="true" />
-            {isFormOpen ? 'Fechar cadastro' : 'Novo morador'}
-          </button>
-        )}
       </header>
 
       {canManage && (
-        <div
-          className={`${styles.formReveal} ${isFormOpen ? styles.formRevealOpen : ''}`}
-          aria-hidden={!isFormOpen}
-          inert={!isFormOpen}
-        >
-          <div className={styles.formRevealInner}>
-            <form className={styles.createForm} onSubmit={handleSubmit}>
-              <h2>Cadastrar morador</h2>
-              <div className={styles.formGrid}>
+        <form className={styles.createForm} onSubmit={handleSubmit}>
+          <h2>Cadastrar morador</h2>
+          <div className={styles.formGrid}>
             <input
               required
               value={form.name}
@@ -152,13 +133,12 @@ export default function ResidentsSection({
               placeholder="Unidade"
               aria-label="Unidade"
             />
-              </div>
-              <button type="submit" className={styles.primaryButton} disabled={isCreating}>
-                {isCreating ? 'Cadastrando...' : 'Cadastrar condômino'}
-              </button>
-            </form>
           </div>
-        </div>
+          <button type="submit" className={styles.primaryButton} disabled={isCreating}>
+            <Plus size={16} weight="bold" aria-hidden="true" />
+            {isCreating ? 'Cadastrando...' : 'Cadastrar condômino'}
+          </button>
+        </form>
       )}
 
       {error ? (
@@ -173,13 +153,18 @@ export default function ResidentsSection({
             <h2 id="residents-list-title">Moradores cadastrados</h2>
           </div>
           <div className={styles.listControls}>
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Pesquisar por nome, CPF, bloco ou unidade"
-              aria-label="Pesquisar condôminos"
-            />
+            <label className={styles.searchField}>
+              <span className={styles.visuallyHidden}>Pesquisar condôminos</span>
+              <span className={styles.searchIcon} aria-hidden="true">
+                <MagnifyingGlass size={17} weight="bold" />
+              </span>
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Pesquisar por nome, CPF, bloco ou unidade"
+              />
+            </label>
             <select
               value={sortOrder}
               onChange={(event) => setSortOrder(event.target.value)}
@@ -200,7 +185,7 @@ export default function ResidentsSection({
                 <span>Perfil</span>
                 <span>Ações</span>
               </div>
-              <div className={styles.listGrid}>
+              <div className={styles.listGrid} tabIndex={0} aria-label="Lista de moradores">
                 {visibleResidents.map((resident) => (
                   <div key={resident.id ?? resident.name} className={styles.listItem}>
                     <div className={styles.residentIdentity}>
@@ -212,10 +197,10 @@ export default function ResidentsSection({
                         {resident.cpfMasked && <small className={styles.maskedCpf}>CPF {resident.cpfMasked}</small>}
                       </div>
                     </div>
-                    <span className={styles.unit}>
+                    <span className={styles.unit} data-label="Unidade">
                       {[resident.block, resident.unit_number].filter(Boolean).join(' · ') || 'Não informada'}
                     </span>
-                    <span className={styles.badge}>{resident.role ?? 'Morador'}</span>
+                    <span className={styles.badge} data-label="Perfil">{resident.role ?? 'Morador'}</span>
                     <div className={styles.rowActions}>
                       {canManage && (
                         <button

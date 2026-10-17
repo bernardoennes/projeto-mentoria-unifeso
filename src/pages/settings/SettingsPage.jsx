@@ -92,7 +92,11 @@ export default function SettingsPage() {
           />
         )}
 
-        <main className={styles.content}>
+        <main
+          className={`${styles.content} ${
+            ['areas', 'residents'].includes(activeSection) ? styles.listContent : ''
+          }`}
+        >
           {isLoading
             ? <div className={styles.loadingState}>Carregando configurações...</div>
             : renderSelectedSection()}
