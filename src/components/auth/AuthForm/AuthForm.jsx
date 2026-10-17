@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { registerFirstAccess } from '../../../services/authService.js'
 import { isValidCpf, normalizeCpf } from '../../../utils/cpfValidation.js'
+import BrickLoader from '../../../components/BrickLoader/BrickLoader.jsx'
 import CpfInput from '../CpfInput/CpfInput.jsx'
 import PasswordInput from '../PasswordInput/PasswordInput.jsx'
 import styles from './AuthForm.module.css'
@@ -313,7 +314,7 @@ export default function AuthForm({ mode = 'login' }) {
           disabled={isLoading || (!isFirstAccess && lockoutSeconds > 0)}
         >
           {isLoading
-            ? 'Processando...'
+            ? <BrickLoader size="sm" inline />
             : isFirstAccess
               ? 'Cadastrar senha'
               : lockoutSeconds > 0

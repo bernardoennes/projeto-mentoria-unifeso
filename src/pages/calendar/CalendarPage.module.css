@@ -467,6 +467,12 @@
   line-height: 1.5;
 }
 
+.loadingState {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+}
+
 .stateMessage a {
   width: fit-content;
   color: var(--link-color);

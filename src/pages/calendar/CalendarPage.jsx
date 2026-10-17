@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CalendarBlank, CaretLeft, CaretRight, Funnel, Plus } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
+import BrickLoader from '../../components/BrickLoader/BrickLoader.jsx'
 import Header from '../../components/Header/Header.jsx'
 import Sidebar from '../../components/Sidebar/Sidebar.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
@@ -398,7 +399,9 @@ export default function CalendarPage() {
               {areasError ? (
                 <div className={styles.stateMessage} role="alert">{areasError}</div>
               ) : isLoadingAreas ? (
-                <div className={styles.stateMessage}>Carregando áreas comuns...</div>
+                <div className={styles.loadingState}>
+                                  <BrickLoader size="sm" />
+                </div>
               ) : numberedAreas.length === 0 ? (
                 <div className={styles.stateMessage}>
                   Nenhuma área comum cadastrada para este condomínio.

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 const ThemeContext = createContext(null)
 const THEME_STORAGE_KEY = 'condominio:theme'
@@ -17,6 +17,7 @@ if (typeof document !== 'undefined') {
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(readStoredTheme)
+  const transitionTimer = useRef(0)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -28,7 +29,15 @@ export function ThemeProvider({ children }) {
     }
   }, [theme])
 
-  const toggleTheme = () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+  const toggleTheme = () => {
+    const root = document.documentElement
+    root.classList.add('theme-transition')
+    window.clearTimeout(transitionTimer.current)
+    transitionTimer.current = window.setTimeout(() => {
+      root.classList.remove('theme-transition')
+    }, 500)
+    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
