@@ -1,38 +1,121 @@
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 24px;
+.pageContent {
+  display: grid;
+  gap: 18px;
+  width: 100%;
 }
 
-.panel h2,
-.formBlock h3 {
-  margin: 0 0 18px;
-  font-size: 1.5rem;
+.pageHeading {
+  margin-bottom: 2px;
+}
+
+.pageHeading h1 {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1.2;
+}
+
+.pageHeading p,
+.profileSummary p,
+.securityHeading p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.profileCard,
+.securityCard {
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface-raised);
+  box-shadow: 0 3px 12px rgba(36, 62, 49, 0.04);
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 74px;
+  padding: 14px 18px;
+}
+
+.avatar {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.profileSummary h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.sectionBlock {
+  display: grid;
+  gap: 10px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 15px;
 }
 
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
-.formBlock {
-  margin-top: 28px;
+.securityCard {
+  padding: 17px 18px;
+}
+
+.securityHeading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.securityHeading h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.securityIcon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+}
+
+.passwordForm {
+  display: grid;
+  gap: 12px;
 }
 
 .inlineFields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
 .passwordField {
   display: grid;
-  gap: 7px;
+  gap: 6px;
   min-width: 0;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .passwordInputWrapper {
@@ -43,21 +126,21 @@
 .passwordInputWrapper input {
   width: 100%;
   min-width: 0;
-  height: 42px;
+  height: 38px;
+  padding: 0 40px 0 10px;
   border: 1px solid var(--input-border);
-  border-radius: 8px;
+  border-radius: 7px;
   background: var(--input-bg);
   color: var(--text-primary);
-  padding: 0 42px 0 12px;
 }
 
 .visibilityButton {
   position: absolute;
   top: 50%;
-  right: 7px;
-  width: 30px;
-  height: 30px;
+  right: 5px;
   display: grid;
+  width: 28px;
+  height: 28px;
   place-items: center;
   transform: translateY(-50%);
   border: 0;
@@ -72,19 +155,50 @@
 }
 
 .primaryButton {
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  margin-top: 16px;
-  font-weight: 600;
+  justify-self: start;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
   background: var(--primary-action-bg);
   color: var(--primary-action-text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-action-hover);
+}
+
+.primaryButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 @media (max-width: 900px) {
   .infoGrid,
   .inlineFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .pageContent {
+    gap: 14px;
+  }
+
+  .hideTitleOnMobile {
+    display: none;
+  }
+
+  .infoGrid,
+  .inlineFields {
     grid-template-columns: 1fr;
+  }
+
+  .securityCard {
+    padding: 14px;
   }
 }

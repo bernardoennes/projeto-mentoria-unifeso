@@ -40,12 +40,16 @@
 
 .actionButton,
 .logoutButton {
-  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
   padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;
   text-align: left;
   font-size: 14px;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 
 .actionButton {
@@ -53,8 +57,22 @@
   color: var(--text-primary);
 }
 
+.actionButton:hover {
+  border-color: var(--border-strong);
+  background: var(--control-hover);
+}
+
 .logoutButton {
   background: transparent;
   color: var(--danger-text);
   border: 1px solid var(--danger-border);
+}
+
+.logoutButton:hover {
+  background: var(--danger-bg);
+}
+
+.actionButton svg,
+.logoutButton svg {
+  flex: 0 0 auto;
 }

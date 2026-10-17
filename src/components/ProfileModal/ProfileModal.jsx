@@ -1,3 +1,4 @@
+import { GearSix, SignOut } from '@phosphor-icons/react'
 import styles from './ProfileModal.module.css'
 
 export default function ProfileModal({ userName, accessType, onClose, onOpenSettings, onLogout }) {
@@ -15,10 +16,12 @@ export default function ProfileModal({ userName, accessType, onClose, onOpenSett
         </div>
 
         <button type="button" className={styles.actionButton} onClick={onOpenSettings}>
-          Minha conta
+          <GearSix size={18} weight="regular" aria-hidden="true" />
+          <span>Configurações</span>
         </button>
         <button type="button" className={styles.logoutButton} onClick={onLogout}>
-          Sair da Conta
+          <SignOut size={18} weight="regular" aria-hidden="true" />
+          <span>Sair da Conta</span>
         </button>
       </div>
     </div>

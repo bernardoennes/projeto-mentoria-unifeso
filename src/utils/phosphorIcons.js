@@ -1,17 +1,17 @@
 import {
+  Bell,
   CalendarCheck,
-  CurrencyDollar,
+  ChatCircleDots,
   House,
   Package,
   Question,
-  UsersThree,
 } from '@phosphor-icons/react'
 
 const iconRegistry = {
   House,
   CalendarCheck,
-  UsersThree,
-  CurrencyDollar,
+  ChatCircleDots,
+  Bell,
   Package,
 }
 

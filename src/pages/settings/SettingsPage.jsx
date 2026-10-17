@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Buildings, UserCircle, UsersThree } from '@phosphor-icons/react'
 import Header from '../../components/Header/Header.jsx'
 import SettingsSidebar from '../../components/settings/SettingsSidebar/SettingsSidebar.jsx'
 import AccountSection from '../../components/settings/AccountSection/AccountSection.jsx'
@@ -9,9 +9,9 @@ import { useSettingsPageState } from './hooks/useSettingsPageState.js'
 import styles from './SettingsPage.module.css'
 
 const sectionDefinitions = [
-  { id: 'account', label: 'Minha conta' },
-  { id: 'areas', label: 'Áreas comuns' },
-  { id: 'residents', label: 'Moradores' },
+  { id: 'account', label: 'Minha conta', group: 'settings', icon: UserCircle },
+  { id: 'areas', label: 'Áreas comuns', group: 'management', icon: Buildings },
+  { id: 'residents', label: 'Moradores', group: 'management', icon: UsersThree },
 ]
 
 export default function SettingsPage() {
@@ -46,6 +46,7 @@ export default function SettingsPage() {
             items={commonAreas}
             error={areasError}
             canManage={canManage}
+            hideTitleOnMobile={visibleSections.length > 1}
             onCreate={createArea}
             isCreating={isCreatingArea}
           />
@@ -56,6 +57,7 @@ export default function SettingsPage() {
             items={residents}
             error={residentsError}
             canManage={canManage}
+            hideTitleOnMobile={visibleSections.length > 1}
             onCreate={createResident}
             isCreating={isCreatingResident}
             onRemove={deleteResident}
@@ -64,7 +66,12 @@ export default function SettingsPage() {
         )
       case 'account':
       default:
-        return <AccountSection profile={profile} />
+        return (
+          <AccountSection
+            profile={profile}
+            hideTitleOnMobile={visibleSections.length > 1}
+          />
+        )
     }
   }
 
@@ -73,23 +80,22 @@ export default function SettingsPage() {
       <Header
         userName={profile?.name ?? 'Usuário'}
         accessType={profile?.access_type ?? 'Não definido'}
+        isSettingsPage
       />
 
       <div className={styles.settingsLayout}>
-        <SettingsSidebar
-          items={visibleSections}
-          activeItem={activeSection}
-          onSelect={setActiveSection}
-        />
+        {visibleSections.length > 1 && (
+          <SettingsSidebar
+            items={visibleSections}
+            activeItem={activeSection}
+            onSelect={setActiveSection}
+          />
+        )}
 
         <main className={styles.content}>
-          <div className={styles.topBar}>
-            <Link to="/" className={styles.homeLink}>
-              Voltar para a home
-            </Link>
-          </div>
-
-          {isLoading ? <div className={styles.loadingState}>Carregando configurações...</div> : renderSelectedSection()}
+          {isLoading
+            ? <div className={styles.loadingState}>Carregando configurações...</div>
+            : renderSelectedSection()}
         </main>
       </div>
     </div>

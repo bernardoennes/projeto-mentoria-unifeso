@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash } from '@phosphor-icons/react'
+import { Plus, Trash } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import CpfInput from '../../auth/CpfInput/CpfInput.jsx'
 import RemoveResidentModal from '../RemoveResidentModal/RemoveResidentModal.jsx'
@@ -8,16 +8,27 @@ import styles from './ResidentsSection.module.css'
 
 const initialForm = { name: '', cpf: '', block: '', unitNumber: '' }
 
+function getInitials(name) {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toLocaleUpperCase('pt-BR')
+}
+
 export default function ResidentsSection({
   items = [],
   error = '',
   canManage = false,
+  hideTitleOnMobile = false,
   onCreate,
   isCreating = false,
   onRemove,
   isRemoving = false,
 }) {
   const [form, setForm] = useState(initialForm)
+  const [isFormOpen, setIsFormOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortOrder, setSortOrder] = useState('asc')
   const [residentToRemove, setResidentToRemove] = useState(null)
@@ -58,6 +69,7 @@ export default function ResidentsSection({
     try {
       await onCreate({ ...form, cpf, unitNumber })
       setForm(initialForm)
+      setIsFormOpen(false)
       toast.success('Condômino cadastrado. A senha provisória não é exibida.')
     } catch (createError) {
       toast.error(createError.message)
@@ -80,13 +92,34 @@ export default function ResidentsSection({
   }
 
   return (
-    <section className={styles.panel}>
-      <h2>Moradores</h2>
+    <div className={styles.pageContent}>
+      <header className={styles.pageHeading}>
+        <div>
+          <h1 className={hideTitleOnMobile ? styles.hideTitleOnMobile : undefined}>Moradores</h1>
+        </div>
+        {canManage && (
+          <button
+            type="button"
+            className={styles.addButton}
+            aria-expanded={isFormOpen}
+            onClick={() => setIsFormOpen((current) => !current)}
+          >
+            <Plus size={16} weight="bold" aria-hidden="true" />
+            {isFormOpen ? 'Fechar cadastro' : 'Novo morador'}
+          </button>
+        )}
+      </header>
 
       {canManage && (
-        <form className={styles.createForm} onSubmit={handleSubmit}>
-          <h3>Cadastrar condômino</h3>
-          <div className={styles.formGrid}>
+        <div
+          className={`${styles.formReveal} ${isFormOpen ? styles.formRevealOpen : ''}`}
+          aria-hidden={!isFormOpen}
+          inert={!isFormOpen}
+        >
+          <div className={styles.formRevealInner}>
+            <form className={styles.createForm} onSubmit={handleSubmit}>
+              <h2>Cadastrar morador</h2>
+              <div className={styles.formGrid}>
             <input
               required
               value={form.name}
@@ -119,11 +152,13 @@ export default function ResidentsSection({
               placeholder="Unidade"
               aria-label="Unidade"
             />
+              </div>
+              <button type="submit" className={styles.primaryButton} disabled={isCreating}>
+                {isCreating ? 'Cadastrando...' : 'Cadastrar condômino'}
+              </button>
+            </form>
           </div>
-          <button type="submit" className={styles.primaryButton} disabled={isCreating}>
-            {isCreating ? 'Cadastrando...' : 'Cadastrar condômino'}
-          </button>
-        </form>
+        </div>
       )}
 
       {error ? (
@@ -133,7 +168,10 @@ export default function ResidentsSection({
           Nenhum condômino visível. Confirme se há moradores cadastrados e se a policy RLS permite a leitura nesta organização.
         </div>
       ) : (
-        <>
+        <section className={styles.listCard} aria-labelledby="residents-list-title">
+          <div className={styles.listHeading}>
+            <h2 id="residents-list-title">Moradores cadastrados</h2>
+          </div>
           <div className={styles.listControls}>
             <input
               type="search"
@@ -153,38 +191,51 @@ export default function ResidentsSection({
           </div>
 
           {visibleResidents.length === 0 ? (
-            <div className={styles.emptyState}>Nenhum condômino corresponde à pesquisa.</div>
+            <div className={styles.emptyState}>Nenhum morador corresponde à pesquisa.</div>
           ) : (
-            <div className={styles.listGrid}>
-              {visibleResidents.map((resident) => (
-                <div key={resident.id ?? resident.name} className={styles.listItem}>
-                  <div>
-                    <strong>{resident.name}</strong>
-                    <small>
-                      {[resident.block, resident.unit_number].filter(Boolean).join(' · ') || 'Unidade não informada'}
-                    </small>
-                    {resident.cpfMasked && <small className={styles.maskedCpf}>CPF {resident.cpfMasked}</small>}
-                  </div>
-                  <div className={styles.rowActions}>
+            <>
+              <div className={styles.tableHeader} aria-hidden="true">
+                <span>Morador</span>
+                <span>Unidade</span>
+                <span>Perfil</span>
+                <span>Ações</span>
+              </div>
+              <div className={styles.listGrid}>
+                {visibleResidents.map((resident) => (
+                  <div key={resident.id ?? resident.name} className={styles.listItem}>
+                    <div className={styles.residentIdentity}>
+                      <span className={styles.avatar} aria-hidden="true">
+                        {getInitials(resident.name)}
+                      </span>
+                      <div>
+                        <strong>{resident.name}</strong>
+                        {resident.cpfMasked && <small className={styles.maskedCpf}>CPF {resident.cpfMasked}</small>}
+                      </div>
+                    </div>
+                    <span className={styles.unit}>
+                      {[resident.block, resident.unit_number].filter(Boolean).join(' · ') || 'Não informada'}
+                    </span>
                     <span className={styles.badge}>{resident.role ?? 'Morador'}</span>
-                    {canManage && (
-                      <button
-                        type="button"
-                        className={styles.removeButton}
-                        onClick={() => setResidentToRemove(resident)}
-                        disabled={!resident.userId}
-                        title="Remover condômino"
-                        aria-label={`Remover ${resident.name}`}
-                      >
-                        <Trash size={18} aria-hidden="true" />
-                      </button>
-                    )}
+                    <div className={styles.rowActions}>
+                      {canManage && (
+                        <button
+                          type="button"
+                          className={styles.removeButton}
+                          onClick={() => setResidentToRemove(resident)}
+                          disabled={!resident.userId}
+                          title="Remover condômino"
+                          aria-label={`Remover ${resident.name}`}
+                        >
+                          <Trash size={18} aria-hidden="true" />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
-        </>
+        </section>
       )}
 
       <RemoveResidentModal
@@ -197,6 +248,6 @@ export default function ResidentsSection({
         }}
         onConfirm={handleRemove}
       />
-    </section>
+    </div>
   )
 }

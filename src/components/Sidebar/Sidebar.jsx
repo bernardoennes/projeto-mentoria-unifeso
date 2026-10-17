@@ -8,8 +8,8 @@ import styles from './Sidebar.module.css'
 const navItems = [
   { id: 'home', label: 'Home', iconName: 'House', path: '/' },
   { id: 'reservas', label: 'Reservas', iconName: 'CalendarCheck', path: '/reservas' },
-  { id: 'moradores', label: 'Moradores', iconName: 'UsersThree' },
-  { id: 'financeiro', label: 'Financeiro', iconName: 'CurrencyDollar' },
+  { id: 'chamados', label: 'Chamados', iconName: 'ChatCircleDots' },
+  { id: 'avisos', label: 'Avisos', iconName: 'Bell' },
   { id: 'pacotes', label: 'Encomendas', iconName: 'Package' },
 ]
 

@@ -9,7 +9,7 @@
   background: var(--nav-bg);
   border-radius: 0 0 14px 0;
   box-shadow: 4px 0 18px rgba(20, 45, 34, 0.12);
-  transition: width 220ms ease;
+  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 40;
 }
 
@@ -110,7 +110,7 @@
 @media (max-width: 700px) {
   .sideNav {
     position: fixed;
-    visibility: hidden;
+    visibility: visible;
     display: flex;
     top: 56px;
     bottom: 0;
@@ -121,13 +121,19 @@
     border-radius: 0 16px 0 0;
     box-shadow: 10px 0 28px rgba(20, 45, 34, 0.2);
     transform: translateX(-105%);
-    transition: transform 220ms ease;
+    transition:
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 260ms;
+    will-change: transform;
   }
 
   .expanded {
     width: min(260px, calc(100vw - 48px));
     visibility: visible;
     transform: translateX(0);
+    transition:
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s;
   }
 
   .navList {
@@ -174,5 +180,6 @@
   .sideNav,
   .expanded {
     transition: none;
+    will-change: auto;
   }
 }

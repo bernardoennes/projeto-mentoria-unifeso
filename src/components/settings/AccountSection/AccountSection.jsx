@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { Eye, EyeSlash, LockKey } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import InfoField from '../InfoField/InfoField.jsx'
 import { updatePassword } from '../../../services/userService.js'
 import styles from './AccountSection.module.css'
 
 const accountFields = [
-  { label: 'Nome', key: 'name' },
+  { label: 'Nome completo', key: 'name' },
   { label: 'CPF', key: 'cpf' },
-  { label: 'Perfil', key: 'access_type' },
+  { label: 'Perfil de acesso', key: 'access_type' },
 ]
 
-export default function AccountSection({ profile }) {
+export default function AccountSection({ profile, hideTitleOnMobile = false }) {
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [visiblePasswords, setVisiblePasswords] = useState({})
   const [isSavingPassword, setIsSavingPassword] = useState(false)
@@ -20,6 +20,13 @@ export default function AccountSection({ profile }) {
     { name: 'newPassword', label: 'Nova senha', autoComplete: 'new-password' },
     { name: 'confirmPassword', label: 'Confirmar nova senha', autoComplete: 'new-password' },
   ]
+  const initials = (profile?.name ?? 'U')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toLocaleUpperCase('pt-BR')
 
   const handlePasswordSubmit = async (event) => {
     event.preventDefault()
@@ -49,62 +56,83 @@ export default function AccountSection({ profile }) {
   }
 
   return (
-    <section className={styles.panel}>
-      <h2>Minha conta</h2>
+    <div className={styles.pageContent}>
+      <header className={styles.pageHeading}>
+        <h1 className={hideTitleOnMobile ? styles.hideTitleOnMobile : undefined}>Minha conta</h1>
+      </header>
 
-      <div className={styles.infoGrid}>
-        {accountFields.map((field) => (
-          <InfoField
-            key={field.key}
-            label={field.label}
-            value={profile?.[field.key] ?? 'Não informado'}
-          />
-        ))}
-      </div>
-
-      <form className={styles.formBlock} onSubmit={handlePasswordSubmit}>
-        <h3>Alterar senha</h3>
-        <div className={styles.inlineFields}>
-          {passwordFields.map((field) => {
-            const isVisible = Boolean(visiblePasswords[field.name])
-            const VisibilityIcon = isVisible ? EyeSlash : Eye
-
-            return (
-              <label key={field.name} className={styles.passwordField}>
-                <span>{field.label}</span>
-                <div className={styles.passwordInputWrapper}>
-                  <input
-                    type={isVisible ? 'text' : 'password'}
-                    autoComplete={field.autoComplete}
-                    required
-                    value={passwordForm[field.name]}
-                    onChange={(event) =>
-                      setPasswordForm({ ...passwordForm, [field.name]: event.target.value })
-                    }
-                  />
-                  <button
-                    type="button"
-                    className={styles.visibilityButton}
-                    onClick={() =>
-                      setVisiblePasswords((current) => ({
-                        ...current,
-                        [field.name]: !current[field.name],
-                      }))
-                    }
-                    aria-label={`${isVisible ? 'Ocultar' : 'Mostrar'} ${field.label.toLowerCase()}`}
-                    title={`${isVisible ? 'Ocultar' : 'Mostrar'} ${field.label.toLowerCase()}`}
-                  >
-                    <VisibilityIcon size={18} aria-hidden="true" />
-                  </button>
-                </div>
-              </label>
-            )
-          })}
+      <section className={styles.profileCard} aria-label="Resumo do perfil">
+        <div className={styles.avatar} aria-hidden="true">{initials}</div>
+        <div className={styles.profileSummary}>
+          <h2>{profile?.name ?? 'Usuário'}</h2>
+          <p>{profile?.access_type ?? 'Perfil não definido'}</p>
         </div>
-        <button type="submit" className={styles.primaryButton} disabled={isSavingPassword}>
-          {isSavingPassword ? 'Salvando...' : 'Salvar senha'}
-        </button>
-      </form>
-    </section>
+      </section>
+
+      <section className={styles.sectionBlock}>
+        <h2 className={styles.sectionTitle}>Dados pessoais</h2>
+        <div className={styles.infoGrid}>
+          {accountFields.map((field) => (
+            <InfoField
+              key={field.key}
+              label={field.label}
+              value={profile?.[field.key] ?? 'Não informado'}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.securityCard}>
+        <header className={styles.securityHeading}>
+          <span className={styles.securityIcon}><LockKey size={18} weight="fill" aria-hidden="true" /></span>
+          <div>
+            <h2>Segurança</h2>
+            <p>Atualize sua senha para manter sua conta protegida.</p>
+          </div>
+        </header>
+        <form className={styles.passwordForm} onSubmit={handlePasswordSubmit}>
+          <div className={styles.inlineFields}>
+            {passwordFields.map((field) => {
+              const isVisible = Boolean(visiblePasswords[field.name])
+              const VisibilityIcon = isVisible ? EyeSlash : Eye
+
+              return (
+                <label key={field.name} className={styles.passwordField}>
+                  <span>{field.label}</span>
+                  <div className={styles.passwordInputWrapper}>
+                    <input
+                      type={isVisible ? 'text' : 'password'}
+                      autoComplete={field.autoComplete}
+                      required
+                      value={passwordForm[field.name]}
+                      onChange={(event) =>
+                        setPasswordForm({ ...passwordForm, [field.name]: event.target.value })
+                      }
+                    />
+                    <button
+                      type="button"
+                      className={styles.visibilityButton}
+                      onClick={() =>
+                        setVisiblePasswords((current) => ({
+                          ...current,
+                          [field.name]: !current[field.name],
+                        }))
+                      }
+                      aria-label={`${isVisible ? 'Ocultar' : 'Mostrar'} ${field.label.toLowerCase()}`}
+                      title={`${isVisible ? 'Ocultar' : 'Mostrar'} ${field.label.toLowerCase()}`}
+                    >
+                      <VisibilityIcon size={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                </label>
+              )
+            })}
+          </div>
+          <button type="submit" className={styles.primaryButton} disabled={isSavingPassword}>
+            {isSavingPassword ? 'Salvando...' : 'Alterar senha'}
+          </button>
+        </form>
+      </section>
+    </div>
   )
 }

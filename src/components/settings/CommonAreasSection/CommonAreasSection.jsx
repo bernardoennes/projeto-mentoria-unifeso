@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Plus } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import styles from './CommonAreasSection.module.css'
 import { AREA_TYPE_LABELS } from '../../../services/commonAreaService.js'
@@ -12,6 +13,7 @@ const weekdayOptions = [
   { value: 6, label: 'Sáb' },
   { value: 7, label: 'Dom' },
 ]
+const weekdayLabels = Object.fromEntries(weekdayOptions.map(({ value, label }) => [value, label]))
 
 const initialForm = {
   areaType: 'SWIMMING_POOL',
@@ -38,11 +40,25 @@ export default function CommonAreasSection({
   items = [],
   error = '',
   canManage = false,
+  hideTitleOnMobile = false,
   onCreate,
   isCreating = false,
 }) {
   const [form, setForm] = useState(initialForm)
-  const numberedAreas = getNumberedAreas(items)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const numberedAreas = useMemo(() => getNumberedAreas(items), [items])
+  const visibleAreas = useMemo(() => {
+    const query = searchTerm.trim().toLocaleLowerCase('pt-BR')
+
+    if (!query) {
+      return numberedAreas
+    }
+
+    return numberedAreas.filter((area) => (
+      `${area.displayName} ${area.area_type}`.toLocaleLowerCase('pt-BR').includes(query)
+    ))
+  }, [numberedAreas, searchTerm])
 
   const toggleWeekday = (weekday) => {
     setForm((current) => ({
@@ -69,6 +85,7 @@ export default function CommonAreasSection({
     try {
       await onCreate(form)
       setForm(initialForm)
+      setIsFormOpen(false)
       toast.success('Área comum cadastrada.')
     } catch (createError) {
       toast.error(createError.message ?? 'Não foi possível cadastrar a área comum.')
@@ -76,14 +93,35 @@ export default function CommonAreasSection({
   }
 
   return (
-    <section className={styles.panel}>
-      <h2>Áreas comuns</h2>
+    <div className={styles.pageContent}>
+      <header className={styles.pageHeading}>
+        <div>
+          <h1 className={hideTitleOnMobile ? styles.hideTitleOnMobile : undefined}>Áreas comuns</h1>
+        </div>
+        {canManage && (
+          <button
+            type="button"
+            className={styles.addButton}
+            aria-expanded={isFormOpen}
+            onClick={() => setIsFormOpen((current) => !current)}
+          >
+            <Plus size={16} weight="bold" aria-hidden="true" />
+            {isFormOpen ? 'Fechar cadastro' : 'Nova área comum'}
+          </button>
+        )}
+      </header>
 
       {canManage && (
-        <form className={styles.createForm} onSubmit={handleSubmit}>
-          <h3>Cadastrar área comum</h3>
+        <div
+          className={`${styles.formReveal} ${isFormOpen ? styles.formRevealOpen : ''}`}
+          aria-hidden={!isFormOpen}
+          inert={!isFormOpen}
+        >
+          <div className={styles.formRevealInner}>
+            <form className={styles.createForm} onSubmit={handleSubmit}>
+              <h2>Cadastrar área comum</h2>
 
-          <div className={styles.formGrid}>
+              <div className={styles.formGrid}>
             <label className={styles.field}>
               <span>Tipo de área</span>
               <select
@@ -129,12 +167,14 @@ export default function CommonAreasSection({
                 onChange={(event) => setForm({ ...form, endHour: event.target.value })}
               />
             </label>
-          </div>
+              </div>
 
-          <button type="submit" className={styles.primaryButton} disabled={isCreating}>
-            {isCreating ? 'Cadastrando...' : 'Cadastrar área'}
-          </button>
-        </form>
+              <button type="submit" className={styles.primaryButton} disabled={isCreating}>
+                {isCreating ? 'Cadastrando...' : 'Cadastrar área'}
+              </button>
+            </form>
+          </div>
+        </div>
       )}
 
       {error ? (
@@ -144,24 +184,45 @@ export default function CommonAreasSection({
           Nenhuma área visível. Confirme se há áreas cadastradas e se a policy RLS permite a leitura para esta organização.
         </div>
       ) : (
-        <div className={styles.listGrid}>
-          {numberedAreas.map((area) => (
-            <div key={area.id} className={styles.listItem}>
-              <div>
+        <section className={styles.listCard} aria-labelledby="common-areas-list-title">
+          <div className={styles.listHeading}>
+            <h2 id="common-areas-list-title">Áreas cadastradas</h2>
+          </div>
+          <label className={styles.searchField}>
+            <span className={styles.visuallyHidden}>Buscar áreas comuns</span>
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Buscar por nome ou tipo..."
+            />
+          </label>
+          <div className={styles.tableHeader} aria-hidden="true">
+            <span>Área</span>
+            <span>Horário</span>
+            <span>Dias disponíveis</span>
+          </div>
+          <div className={styles.listGrid}>
+            {visibleAreas.map((area) => (
+              <div key={area.id} className={styles.listItem}>
                 <strong>{area.displayName}</strong>
-                <small>
+                <span>
                   {area.start_hour && area.end_hour
                     ? `${area.start_hour} às ${area.end_hour}`
-                    : 'Horário não definido'}
-                </small>
+                    : 'Não definido'}
+                </span>
+                <span className={styles.weekdays}>
+                  {area.available_weekdays?.map((day) => weekdayLabels[day] ?? day).join(', ')
+                    || 'Não definidos'}
+                </span>
               </div>
-              <span className={styles.weekdays}>
-                {area.available_weekdays?.join(', ') ?? 'Dias não definidos'}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+            {visibleAreas.length === 0 && (
+              <p className={styles.noResults}>Nenhuma área corresponde à pesquisa.</p>
+            )}
+          </div>
+        </section>
       )}
-    </section>
+    </div>
   )
 }

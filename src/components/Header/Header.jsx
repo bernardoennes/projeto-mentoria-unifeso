@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { House, List, Moon, Sun, UserCircle, X } from '@phosphor-icons/react'
+import { ArrowLeft, House, List, Moon, Sun, UserCircle, X } from '@phosphor-icons/react'
 import ProfileModal from '../ProfileModal/ProfileModal.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useTheme } from '../../context/ThemeContext.jsx'
@@ -9,6 +9,7 @@ import styles from './Header.module.css'
 export default function Header({
   userName,
   accessType,
+  isSettingsPage = false,
   navigationExpanded,
   onNavigationToggle,
 }) {
@@ -29,6 +30,12 @@ export default function Header({
   const handleOpenSettings = () => {
     setIsProfileOpen(false)
     navigate('/settings?section=account')
+  }
+
+  const handleReturnHome = () => {
+    setIsProfileOpen(false)
+    closeMobileMenu()
+    navigate('/')
   }
 
   const handleLogout = async () => {
@@ -70,17 +77,19 @@ export default function Header({
           <button
             type="button"
             className={styles.profileTrigger}
-            aria-label="Abrir menu do perfil"
-            title="Perfil"
-            aria-expanded={isProfileOpen}
-            onClick={() => {
+            aria-label={isSettingsPage ? 'Voltar para a página inicial' : 'Abrir menu do perfil'}
+            title={isSettingsPage ? 'Página inicial' : 'Perfil'}
+            aria-expanded={isSettingsPage ? undefined : isProfileOpen}
+            onClick={isSettingsPage ? handleReturnHome : () => {
               closeMobileMenu()
               setIsProfileOpen((current) => !current)
             }}
           >
-            <UserCircle size={22} weight="regular" aria-hidden="true" />
+            {isSettingsPage
+              ? <ArrowLeft size={21} weight="bold" aria-hidden="true" />
+              : <UserCircle size={22} weight="regular" aria-hidden="true" />}
           </button>
-          {isProfileOpen && (
+          {!isSettingsPage && isProfileOpen && (
             <ProfileModal
               userName={userName}
               accessType={accessType}

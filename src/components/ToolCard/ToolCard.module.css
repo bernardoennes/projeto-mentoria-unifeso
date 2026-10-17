@@ -27,6 +27,7 @@
 }
 
 .navCard {
+  position: relative;
   border: 1px solid var(--nav-card-border);
   background: var(--nav-card-bg);
   color: var(--nav-card-text);
@@ -39,7 +40,13 @@
   gap: 8px;
   width: 100%;
   cursor: pointer;
-  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .navCard:hover {
@@ -83,10 +90,13 @@
 }
 
 .navLabel {
+  position: absolute;
+  left: 42px;
   opacity: 0;
   transform: translateX(-6px);
   white-space: nowrap;
   transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
 }
 
 .navExpanded .navLabel {
@@ -95,14 +105,9 @@
 }
 
 .navCard:not(.navExpanded) {
-  justify-content: center;
-  width: 48px;
-  margin-inline: auto;
-  padding: 0;
-}
-
-.navCard:not(.navExpanded) .navLabel {
-  display: none;
+  width: calc(100% - 4px);
+  margin-inline: 2px;
+  padding: 0 9px;
 }
 
 @media (prefers-reduced-motion: reduce) {

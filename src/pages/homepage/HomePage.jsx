@@ -22,6 +22,7 @@ export default function HomePage() {
 
   const overlayClass = isSidebarExpanded ? ` ${styles.overlayVisible}` : ''
   const userName = user?.name ?? 'Morador'
+  const greetingName = userName.trim().split(/\s+/)[0] || 'Morador'
   const reservations = reservationState.organisationId === organisationId
     ? reservationState.reservations
     : getCalendarReservations(organisationId)
@@ -81,7 +82,7 @@ export default function HomePage() {
 
         <main className={styles.homeContent}>
           <div className={styles.welcomeBlock}>
-            <h1>Olá, {userName}!</h1>
+            <h1>Olá, {greetingName}!</h1>
           </div>
 
           <section className={styles.dashboardGrid} aria-label="Resumo do condomínio">
