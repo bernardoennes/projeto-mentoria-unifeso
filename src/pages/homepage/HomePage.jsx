@@ -10,7 +10,6 @@ import {
   subscribeToCalendarReservations,
 } from '../../services/calendarService.js'
 import styles from './HomePage.module.css'
-import Teste from '../../components/texto de boas-vindas/teste.jsx'
 
 
 export default function HomePage() {
@@ -85,7 +84,6 @@ export default function HomePage() {
         <main className={styles.homeContent}>
           <div className={styles.welcomeBlock}>
             <h1>Olá, {greetingName}!</h1>
-            <Teste />
           </div>
 
           <section className={styles.dashboardGrid} aria-label="Resumo do condomínio">
