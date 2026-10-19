@@ -1,4 +1,4 @@
-import { CaretDown } from '@phosphor-icons/react'
+import Select from '../../Select/Select'
 import styles from './SettingsSidebar.module.css'
 
 export default function SettingsSidebar({ items, activeItem, onSelect }) {
@@ -40,19 +40,14 @@ export default function SettingsSidebar({ items, activeItem, onSelect }) {
         <div className={styles.mobileSelectSummary} aria-hidden="true">
           {SelectedIcon && <SelectedIcon size={20} weight="fill" />}
         </div>
-        <label className={styles.selectControl}>
-          <span className={styles.visuallyHidden}>Escolher seção das configurações</span>
-          <select
+        <div className={styles.selectControl}>
+          <Select
             value={activeItem}
-            onChange={(event) => onSelect(event.target.value)}
-            aria-label="Escolher seção das configurações"
-          >
-            {items.map((item) => (
-              <option key={item.id} value={item.id}>{item.label}</option>
-            ))}
-          </select>
-          <CaretDown className={styles.selectIcon} size={16} weight="bold" aria-hidden="true" />
-        </label>
+            onChange={onSelect}
+            ariaLabel="Escolher seção das configurações"
+            options={items.map((item) => ({ value: item.id, label: item.label }))}
+          />
+        </div>
       </div>
     </div>
   )

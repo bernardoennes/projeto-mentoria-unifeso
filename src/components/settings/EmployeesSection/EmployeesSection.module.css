@@ -1,0 +1,13 @@
+.employeeCargo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .employeeTableHeader {
+    display: none;
+  }
+
+}

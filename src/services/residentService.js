@@ -2,18 +2,18 @@ import { supabase } from '../lib/supabase.js'
 import { getEdgeFunctionError, getRequestError } from './edgeFunctionError.js'
 
 function normalizeResident(item) {
-  const profile = item.users ?? {}
+  const membership = item.membership ?? {}
+  const profile = membership.users ?? {}
 
   if (!profile.name) {
     throw new Error('Não foi possível carregar os dados dos moradores. Tente novamente.')
   }
 
   return {
-    id: item.id,
-    userId: profile.id,
+    id: item.organisation_user_id,
+    userId: membership.user_id ?? profile.id,
     name: profile.name,
     cpfMasked: profile.cpf_masked?.replace(/x/gi, '*') ?? '',
-    role: item.access_type ?? 'CONDOMINO',
     block: item.block,
     unit_number: item.unit_number,
   }
@@ -24,9 +24,21 @@ export async function fetchResidents(organisationId) {
     return []
   }
 
-  const { data, error } = await supabase.rpc('get_organisation_condominos', {
-    p_organisation_id: organisationId,
-  })
+  const { data, error } = await supabase
+    .from('organisation_residents')
+    .select(`
+      organisation_user_id,
+      block,
+      unit_number,
+      membership:organisation_users!inner(
+        id,
+        organisation_id,
+        user_id,
+        users(id, name, cpf_masked)
+      )
+    `)
+    .eq('membership.organisation_id', organisationId)
+    .eq('membership.access_type', 'CONDOMINO')
 
   if (error) {
     throw getRequestError(error, 'Não foi possível carregar os moradores. Tente novamente.')
@@ -51,6 +63,22 @@ export async function provisionCondomino({ name, cpf, organisationId, block, uni
   }
 
   return data
+}
+
+export async function updateResidentDetails({ membershipId, block, unitNumber }) {
+  const { data, error } = await supabase
+    .from('organisation_residents')
+    .update({ block, unit_number: unitNumber })
+    .eq('organisation_user_id', membershipId)
+    .select('organisation_user_id')
+
+  if (error) {
+    throw getRequestError(error, 'Não foi possível atualizar o morador. Tente novamente.')
+  }
+
+  if (!data?.length) {
+    throw new Error('Você não tem permissão para editar este morador.')
+  }
 }
 
 export async function removeCondomino({ organisationId, userId }) {

@@ -170,16 +170,6 @@
   font-size: 12px;
 }
 
-.filterPopover select {
-  width: 100%;
-  height: 36px;
-  border: 1px solid var(--input-border);
-  border-radius: 7px;
-  background: var(--input-bg);
-  color: var(--text-primary);
-  padding: 0 8px;
-}
-
 .calendarLayout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 310px;
@@ -396,17 +386,17 @@
   font-weight: 650;
 }
 
-.field input,
-.field select {
+.field input {
   width: 100%;
   min-width: 0;
-  height: 40px;
+  height: var(--control-height);
   border: 1px solid var(--input-border);
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   color: var(--text-primary);
-  padding: 0 10px;
+  padding: 0 var(--control-padding-x);
   font: inherit;
+  font-size: var(--control-font-size);
   font-weight: 400;
 }
 

@@ -1,4 +1,8 @@
 :root {
+  --control-height: 40px;
+  --control-radius: 8px;
+  --control-font-size: 13px;
+  --control-padding-x: 12px;
   color-scheme: dark;
   --app-bg: #111a16;
   --header-bg: #244f40;
@@ -145,7 +149,10 @@ body {
   box-sizing: border-box;
 }
 
-button {
+button,
+input,
+select,
+textarea {
   font: inherit;
 }
 

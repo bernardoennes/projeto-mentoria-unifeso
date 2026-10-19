@@ -41,6 +41,10 @@ export default function SettingsPage() {
     isCreatingEmployee,
     deleteEmployee,
     isRemovingEmployee,
+    updateResident,
+    isUpdatingResident,
+    updateEmployee,
+    isUpdatingEmployee,
   } =  useSettingsPageState({ user, membership })
 
   const visibleSections = canManage
@@ -71,6 +75,8 @@ export default function SettingsPage() {
             isCreating={isCreatingResident}
             onRemove={deleteResident}
             isRemoving={isRemovingResident}
+            onUpdate={updateResident}
+            isUpdating={isUpdatingResident}
           />
         )
       case 'employees':
@@ -84,6 +90,8 @@ export default function SettingsPage() {
             isCreating={isCreatingEmployee}
             onRemove={deleteEmployee}
             isRemoving={isRemovingEmployee}
+            onUpdate={updateEmployee}
+            isUpdating={isUpdatingEmployee}
           />
         )
       case 'account':

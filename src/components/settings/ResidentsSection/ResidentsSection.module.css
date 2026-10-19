@@ -75,13 +75,13 @@
 .formGrid > input {
   width: 100%;
   min-width: 0;
-  height: 38px;
-  padding: 0 10px;
+  height: var(--control-height);
+  padding: 0 var(--control-padding-x);
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--control-font-size);
 }
 
 .primaryButton {
@@ -127,17 +127,16 @@
   margin-bottom: 10px;
 }
 
-.listControls input,
-.listControls select {
+.listControls input {
   width: 100%;
   min-width: 0;
-  height: 36px;
-  padding: 0 10px;
+  height: var(--control-height);
+  padding: 0 var(--control-padding-x);
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--control-font-size);
 }
 
 .searchField {
@@ -145,7 +144,7 @@
   align-items: center;
   min-width: 0;
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   overflow: hidden;
 }
@@ -188,7 +187,7 @@
 .tableHeader,
 .listItem {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) 42px;
+  grid-template-columns: minmax(0, 1.8fr) minmax(100px, 0.8fr) 74px;
   align-items: center;
   gap: 12px;
 }
@@ -203,6 +202,7 @@
 
 .listGrid {
   display: grid;
+  grid-auto-rows: 54px;
   flex: 1;
   min-height: 0;
   overflow-x: hidden;
@@ -218,7 +218,11 @@
 }
 
 .listItem {
+  box-sizing: border-box;
+  height: 54px;
   min-height: 54px;
+  max-height: 54px;
+  overflow: hidden;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-secondary);
   font-size: 12px;
@@ -276,20 +280,30 @@
   color: var(--text-secondary);
 }
 
-.badge {
-  justify-self: start;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: var(--accent-soft-bg);
-  color: var(--accent-soft-text);
-  font-size: 10px;
-  white-space: nowrap;
-}
-
 .rowActions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 4px;
+}
+
+.editButton {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.editButton:hover {
+  border-color: var(--border-strong);
+  background: var(--control-hover);
+  color: var(--text-primary);
 }
 
 .removeButton {
@@ -353,9 +367,12 @@
   }
 
   .listItem {
+    height: 92px;
+    min-height: 92px;
+    max-height: 92px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: 32px minmax(0, 1fr);
     gap: 10px 12px;
-    min-height: 0;
     padding: 12px;
     border: 1px solid var(--border-color);
     border-radius: 9px;
@@ -366,8 +383,7 @@
     grid-row: 1;
   }
 
-  .unit,
-  .badge {
+  .unit {
     min-width: 0;
     overflow-wrap: anywhere;
   }
@@ -378,8 +394,7 @@
     justify-self: end;
   }
 
-  .unit,
-  .badge {
+  .unit {
     display: grid;
     align-content: start;
     gap: 4px;
@@ -393,16 +408,8 @@
     font-weight: 600;
   }
 
-  .badge {
-    justify-self: stretch;
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    color: var(--text-secondary);
-    white-space: normal;
-  }
-
   .listGrid {
+    grid-auto-rows: 92px;
     gap: 8px;
     padding: 2px 0 8px;
   }

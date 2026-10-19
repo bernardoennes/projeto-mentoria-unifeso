@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { createCommonArea as createCommonAreaRequest, fetchCommonAreas } from '../../../services/commonAreaService.js'
-import { fetchResidents, provisionCondomino, removeCondomino } from '../../../services/residentService.js'
+import { fetchResidents, provisionCondomino, removeCondomino, updateResidentDetails } from '../../../services/residentService.js'
+import { fetchEmployees, provisionFuncionario, removeFuncionario, updateEmployeeDetails } from '../../../services/employeeService.js'
 import { buildUserProfile } from '../../../services/userService.js'
 import { canManageCondominium } from '../../../utils/permissions.js'
 
@@ -23,10 +24,16 @@ export function useSettingsPageState({ user, membership }) {
   const [residentsError, setResidentsError] = useState('')
   const [isCreatingResident, setIsCreatingResident] = useState(false)
   const [isRemovingResident, setIsRemovingResident] = useState(false)
+  const [employees, setEmployees] = useState([])
+  const [employeesError, setEmployeesError] = useState('')
+  const [isCreatingEmployee, setIsCreatingEmployee] = useState(false)
+  const [isRemovingEmployee, setIsRemovingEmployee] = useState(false)
+  const [isUpdatingResident, setIsUpdatingResident] = useState(false)
+  const [isUpdatingEmployee, setIsUpdatingEmployee] = useState(false)
 
   const canManage = canManageCondominium(membership)
   const requestedSection = searchParams.get('section')
-  const isRestrictedSection = ['areas', 'residents'].includes(requestedSection) && !canManage
+  const isRestrictedSection = ['areas', 'residents', 'employees'].includes(requestedSection) && !canManage
   const activeSection = isRestrictedSection ? 'account' : requestedSection ?? 'account'
   const profile = buildUserProfile(user, membership)
 
@@ -45,10 +52,12 @@ export function useSettingsPageState({ user, membership }) {
       setIsLoading(true)
       setAreasError('')
       setResidentsError('')
+      setEmployeesError('')
 
-      const [areasResult, residentsResult] = await Promise.allSettled([
+      const [areasResult, residentsResult, employeesResult] = await Promise.allSettled([
         fetchCommonAreas(organisationId),
         fetchResidents(organisationId),
+        fetchEmployees(organisationId),
       ])
 
       if (!isCurrent) {
@@ -59,6 +68,8 @@ export function useSettingsPageState({ user, membership }) {
       setResidents(residentsResult.status === 'fulfilled' ? residentsResult.value : [])
       setAreasError(areasResult.status === 'rejected' ? getQueryErrorMessage(areasResult.reason) : '')
       setResidentsError(residentsResult.status === 'rejected' ? getQueryErrorMessage(residentsResult.reason) : '')
+      setEmployees(employeesResult.status === 'fulfilled' ? employeesResult.value : [])
+      setEmployeesError(employeesResult.status === 'rejected' ? getQueryErrorMessage(employeesResult.reason) : '')
       setIsLoading(false)
     }
 
@@ -103,6 +114,63 @@ export function useSettingsPageState({ user, membership }) {
       throw new Error(message)
     } finally {
       setIsCreatingResident(false)
+    }
+  }
+
+  const createEmployee = async ({ name, cpf, cargoCode }) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem cadastrar funcionários.')
+    }
+
+    if (!membership?.organisation_id) {
+      throw new Error('Não foi possível identificar a organização do usuário.')
+    }
+
+    setIsCreatingEmployee(true)
+
+    try {
+      const result = await provisionFuncionario({
+        name,
+        cpf,
+        organisationId: membership.organisation_id,
+        cargoCode,
+      })
+      setEmployees(await fetchEmployees(membership.organisation_id))
+      setEmployeesError('')
+      return result
+    } catch (error) {
+      const message = error?.code === '42501'
+        ? getQueryErrorMessage(error)
+        : error?.message ?? 'Não foi possível cadastrar o funcionário.'
+      throw new Error(message)
+    } finally {
+      setIsCreatingEmployee(false)
+    }
+  }
+
+  const deleteEmployee = async (userId) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem remover funcionários.')
+    }
+
+    if (!membership?.organisation_id || !Number.isSafeInteger(Number(userId))) {
+      throw new Error('Não foi possível identificar o condomínio ou o perfil do funcionário.')
+    }
+
+    setIsRemovingEmployee(true)
+
+    try {
+      const result = await removeFuncionario({
+        organisationId: membership.organisation_id,
+        userId: Number(userId),
+      })
+      setEmployees(await fetchEmployees(membership.organisation_id))
+      setEmployeesError('')
+      return result
+    } catch (error) {
+      throw new Error(error?.message ?? 'Não foi possível remover o vínculo do funcionário.')
+    } finally {
+      setIsRemovingEmployee(false)
     }
   }
 
@@ -169,13 +237,55 @@ export function useSettingsPageState({ user, membership }) {
     }
   }
 
+  const updateResident = async ({ membershipId, block, unitNumber }) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem editar condôminos.')
+    }
+
+    setIsUpdatingResident(true)
+
+    try {
+      await updateResidentDetails({ membershipId, block, unitNumber })
+      setResidents(await fetchResidents(membership.organisation_id))
+      setResidentsError('')
+    } finally {
+      setIsUpdatingResident(false)
+    }
+  }
+
+  const updateEmployee = async ({ membershipId, cargoCode }) => {
+    if (!canManage) {
+      throw new Error('Apenas síndicos podem editar funcionários.')
+    }
+
+    setIsUpdatingEmployee(true)
+
+    try {
+      await updateEmployeeDetails({ membershipId, cargoCode })
+      setEmployees(await fetchEmployees(membership.organisation_id))
+      setEmployeesError('')
+    } finally {
+      setIsUpdatingEmployee(false)
+    }
+  }
+
   return {
+    updateResident,
+    isUpdatingResident,
+    updateEmployee,
+    isUpdatingEmployee,
     activeSection,
     setActiveSection,
     profile,
     canManage,
     commonAreas: membership?.organisation_id && canManage ? commonAreas : [],
     residents: membership?.organisation_id && canManage ? residents : [],
+    employees: membership?.organisation_id && canManage ? employees : [],
+    employeesError,
+    createEmployee,
+    isCreatingEmployee,
+    deleteEmployee,
+    isRemovingEmployee,
     isLoading: Boolean(membership?.organisation_id && canManage) && isLoading,
     areasError,
     createArea,

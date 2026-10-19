@@ -156,12 +156,13 @@
 .passwordInputWrapper input {
   width: 100%;
   min-width: 0;
-  height: 38px;
-  padding: 0 40px 0 10px;
+  height: var(--control-height);
+  padding: 0 40px 0 var(--control-padding-x);
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   color: var(--text-primary);
+  font-size: var(--control-font-size);
 }
 
 .visibilityButton {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CalendarBlank, Clock, MagnifyingGlass, Plus } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
+import Select, { SORT_OPTIONS } from '../../Select/Select'
 import styles from './CommonAreasSection.module.css'
 import { AREA_TYPE_LABELS } from '../../../services/commonAreaService.js'
 
@@ -183,14 +184,11 @@ export default function CommonAreasSection({
           <div className={styles.formGrid}>
             <label className={styles.field}>
               <span>Tipo de área</span>
-              <select
+              <Select
                 value={form.areaType}
-                onChange={(event) => setForm({ ...form, areaType: event.target.value })}
-              >
-                {Object.entries(AREA_TYPE_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
-                ))}
-              </select>
+                onChange={(areaType) => setForm({ ...form, areaType })}
+                options={Object.entries(AREA_TYPE_LABELS).map(([value, label]) => ({ value, label }))}
+              />
             </label>
 
             <fieldset className={styles.weekdayField}>
@@ -258,14 +256,12 @@ export default function CommonAreasSection({
                 placeholder="Buscar por nome ou tipo..."
               />
             </label>
-            <select
+            <Select
               value={sortOrder}
-              onChange={(event) => setSortOrder(event.target.value)}
-              aria-label="Ordenar áreas por nome"
-            >
-              <option value="asc">Nome: A a Z</option>
-              <option value="desc">Nome: Z a A</option>
-            </select>
+              onChange={setSortOrder}
+              ariaLabel="Ordenar áreas por nome"
+              options={SORT_OPTIONS}
+            />
           </div>
           <div className={styles.listGrid} tabIndex={0} aria-label="Lista de áreas comuns">
             {visibleAreas.map((area) => (

@@ -1,6 +1,12 @@
 import styles from './RemoveResidentModal.module.css'
 
-export default function RemoveResidentModal({ resident, isRemoving, onCancel, onConfirm }) {
+export default function RemoveResidentModal({
+  resident,
+  title = 'Remover condômino?',
+  isRemoving,
+  onCancel,
+  onConfirm,
+}) {
   if (!resident) {
     return null
   }
@@ -15,7 +21,7 @@ export default function RemoveResidentModal({ resident, isRemoving, onCancel, on
         aria-describedby="remove-resident-description"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <h2 id="remove-resident-title">Remover condômino?</h2>
+        <h2 id="remove-resident-title">{title}</h2>
         <p id="remove-resident-description">
           O vínculo de <strong>{resident.name}</strong> com este condomínio será removido. A conta e o perfil da pessoa serão mantidos.
         </p>

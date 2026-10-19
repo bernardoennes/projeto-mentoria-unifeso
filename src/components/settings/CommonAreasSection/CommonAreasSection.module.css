@@ -84,16 +84,16 @@
   color: var(--text-muted);
 }
 
-.field input,
-.field select {
+.field input {
   width: 100%;
   min-width: 0;
-  height: 38px;
-  padding: 0 10px;
+  height: var(--control-height);
+  padding: 0 var(--control-padding-x);
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   color: var(--text-primary);
+  font-size: var(--control-font-size);
 }
 
 .weekdayField {
@@ -175,7 +175,7 @@
   align-items: center;
   min-width: 0;
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: var(--input-bg);
   overflow: hidden;
 }
@@ -184,12 +184,12 @@
   flex: 1;
   width: 100%;
   min-width: 0;
-  height: 36px;
-  padding: 0 10px 0 0;
+  height: calc(var(--control-height) - 2px);
+  padding: 0 var(--control-padding-x) 0 0;
   border: 0;
   background: var(--input-bg);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--control-font-size);
 }
 
 .searchField input::placeholder {
@@ -214,18 +214,6 @@
   grid-template-columns: minmax(0, 1fr) minmax(140px, 190px);
   gap: 9px;
   margin-bottom: 10px;
-}
-
-.listControls select {
-  width: 100%;
-  min-width: 0;
-  height: 36px;
-  padding: 0 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 7px;
-  background: var(--input-bg);
-  color: var(--text-primary);
-  font-size: 12px;
 }
 
 .listItem {

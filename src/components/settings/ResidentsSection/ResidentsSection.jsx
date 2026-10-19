@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { MagnifyingGlass, Plus, Trash } from '@phosphor-icons/react'
+import { MagnifyingGlass, PencilSimple, Plus, Trash } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import CpfInput from '../../auth/CpfInput/CpfInput.jsx'
+import EditMemberModal from '../EditMemberModal/EditMemberModal.jsx'
 import RemoveResidentModal from '../RemoveResidentModal/RemoveResidentModal.jsx'
 import { isValidCpf, normalizeCpf } from '../../../utils/cpfValidation.js'
+import Select, { SORT_OPTIONS } from '../../Select/Select'
 import styles from './ResidentsSection.module.css'
 
 const initialForm = { name: '', cpf: '', block: '', unitNumber: '' }
@@ -26,8 +28,12 @@ export default function ResidentsSection({
   isCreating = false,
   onRemove,
   isRemoving = false,
+  onUpdate,
+  isUpdating = false,
 }) {
   const [form, setForm] = useState(initialForm)
+  const [residentToEdit, setResidentToEdit] = useState(null)
+  const [editForm, setEditForm] = useState({ block: '', unitNumber: '' })
   const [searchTerm, setSearchTerm] = useState('')
   const [sortOrder, setSortOrder] = useState('asc')
   const [residentToRemove, setResidentToRemove] = useState(null)
@@ -71,6 +77,36 @@ export default function ResidentsSection({
       toast.success('Condômino cadastrado. A senha provisória não é exibida.')
     } catch (createError) {
       toast.error(createError.message)
+    }
+  }
+
+  const openEdit = (resident) => {
+    setResidentToEdit(resident)
+    setEditForm({ block: resident.block ?? '', unitNumber: String(resident.unit_number ?? '') })
+  }
+
+  const handleEditSubmit = async (event) => {
+    event.preventDefault()
+
+    const unitNumber = Number(editForm.unitNumber)
+    const block = editForm.block.trim()
+
+    if (!block) {
+      toast.error('Informe o bloco.')
+      return
+    }
+
+    if (!Number.isSafeInteger(unitNumber) || unitNumber < 1) {
+      toast.error('Informe um número de unidade válido.')
+      return
+    }
+
+    try {
+      await onUpdate({ membershipId: residentToEdit.id, block, unitNumber })
+      toast.success('Morador atualizado.')
+      setResidentToEdit(null)
+    } catch (updateError) {
+      toast.error(updateError.message)
     }
   }
 
@@ -165,14 +201,12 @@ export default function ResidentsSection({
                 placeholder="Pesquisar por nome, CPF, bloco ou unidade"
               />
             </label>
-            <select
+            <Select
               value={sortOrder}
-              onChange={(event) => setSortOrder(event.target.value)}
-              aria-label="Ordenar condôminos por nome"
-            >
-              <option value="asc">Nome: A a Z</option>
-              <option value="desc">Nome: Z a A</option>
-            </select>
+              onChange={setSortOrder}
+              ariaLabel="Ordenar condôminos por nome"
+              options={SORT_OPTIONS}
+            />
           </div>
 
           {visibleResidents.length === 0 ? (
@@ -182,7 +216,6 @@ export default function ResidentsSection({
               <div className={styles.tableHeader} aria-hidden="true">
                 <span>Morador</span>
                 <span>Unidade</span>
-                <span>Perfil</span>
                 <span>Ações</span>
               </div>
               <div className={styles.listGrid} tabIndex={0} aria-label="Lista de moradores">
@@ -200,8 +233,18 @@ export default function ResidentsSection({
                     <span className={styles.unit} data-label="Unidade">
                       {[resident.block, resident.unit_number].filter(Boolean).join(' · ') || 'Não informada'}
                     </span>
-                    <span className={styles.badge} data-label="Perfil">{resident.role ?? 'Morador'}</span>
                     <div className={styles.rowActions}>
+                      {canManage && (
+                        <button
+                          type="button"
+                          className={styles.editButton}
+                          onClick={() => openEdit(resident)}
+                          title="Editar morador"
+                          aria-label={`Editar ${resident.name}`}
+                        >
+                          <PencilSimple size={18} aria-hidden="true" />
+                        </button>
+                      )}
                       {canManage && (
                         <button
                           type="button"
@@ -221,6 +264,34 @@ export default function ResidentsSection({
             </>
           )}
         </section>
+      )}
+
+      {residentToEdit && (
+        <EditMemberModal
+          title="Editar morador"
+          name={residentToEdit.name}
+          isSaving={isUpdating}
+          onCancel={() => setResidentToEdit(null)}
+          onSubmit={handleEditSubmit}
+        >
+          <input
+            required
+            value={editForm.block}
+            onChange={(event) => setEditForm({ ...editForm, block: event.target.value })}
+            placeholder="Bloco"
+            aria-label="Bloco"
+          />
+          <input
+            required
+            type="number"
+            min="1"
+            step="1"
+            value={editForm.unitNumber}
+            onChange={(event) => setEditForm({ ...editForm, unitNumber: event.target.value })}
+            placeholder="Unidade"
+            aria-label="Unidade"
+          />
+        </EditMemberModal>
       )}
 
       <RemoveResidentModal

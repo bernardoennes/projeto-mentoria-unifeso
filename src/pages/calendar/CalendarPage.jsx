@@ -26,6 +26,7 @@ import {
   toMinutes,
   toTimeValue,
 } from '../../utils/calendarUtils.js'
+import Select from '../../components/Select/Select'
 import styles from './CalendarPage.module.css'
 
 const HOUR_HEIGHT = 32
@@ -78,7 +79,7 @@ export default function CalendarPage() {
   const selectedArea = numberedAreas.find((area) => String(area.id) === selectedAreaId)
   const weekDates = getWeekDates(selectedDate)
   const todayKey = getDateKey(new Date())
-  const weekLabel = `${formatDate(weekDates[0], { day: 'numeric' })} – ${formatDate(weekDates[6], {
+  const weekLabel = `${formatDate(weekDates[0], { day: 'numeric' })} â€“ ${formatDate(weekDates[6], {
     day: 'numeric',
     month: 'short',
   })} ${weekDates[6].getFullYear()}`
@@ -296,12 +297,14 @@ export default function CalendarPage() {
                 {isFilterOpen && (
                   <label className={styles.filterPopover}>
                     <span>Exibir área</span>
-                    <select value={filterAreaId} onChange={(event) => setFilterAreaId(event.target.value)}>
-                      <option value="all">Todas as áreas</option>
-                      {numberedAreas.map((area) => (
-                        <option key={area.id} value={String(area.id)}>{area.displayName}</option>
-                      ))}
-                    </select>
+                    <Select
+                      value={filterAreaId}
+                      onChange={setFilterAreaId}
+                      options={[
+                        { value: 'all', label: 'Todas as áreas' },
+                        ...numberedAreas.map((area) => ({ value: String(area.id), label: area.displayName })),
+                      ]}
+                    />
                   </label>
                 )}
               </div>
@@ -376,11 +379,11 @@ export default function CalendarPage() {
                                   left: `calc(${lane.lane / lane.laneCount * 100}% + 3px)`,
                                   width: `calc(${lane.span / lane.laneCount * 100}% - 6px)`,
                                 }}
-                                title={`${booking.areaName}, ${booking.startTime}–${booking.endTime}, ${booking.residentName}`}
+                                title={`${booking.areaName}, ${booking.startTime}â€“${booking.endTime}, ${booking.residentName}`}
                               >
                                 <strong>{booking.areaName}</strong>
                                 <span>{booking.residentName}</span>
-                                <small>{booking.startTime}–{booking.endTime}</small>
+                                <small>{booking.startTime}â€“{booking.endTime}</small>
                               </article>
                             )
                           })}
@@ -423,41 +426,29 @@ export default function CalendarPage() {
                   <div className={styles.timeFields}>
                     <label className={styles.field}>
                       <span>Início</span>
-                      <select
+                      <Select
                         value={selectedStart}
-                        onChange={(event) => handleStartTimeChange(event.target.value)}
-                        required
-                      >
-                        {areaTimeRange.options.map((time) => (
-                          <option key={time} value={time}>{time}</option>
-                        ))}
-                      </select>
+                        onChange={handleStartTimeChange}
+                        options={areaTimeRange.options.map((time) => ({ value: time, label: time }))}
+                      />
                     </label>
                     <label className={styles.field}>
                       <span>Fim</span>
-                      <select
+                      <Select
                         value={selectedEnd}
-                        onChange={(event) => setSelectedEnd(event.target.value)}
-                        required
-                      >
-                        {endTimeOptions.map((time) => (
-                          <option key={time} value={time}>{time}</option>
-                        ))}
-                      </select>
+                        onChange={setSelectedEnd}
+                        options={endTimeOptions.map((time) => ({ value: time, label: time }))}
+                      />
                     </label>
                   </div>
 
                   <label className={styles.field}>
                     <span>Área</span>
-                    <select
+                    <Select
                       value={selectedAreaId}
-                      onChange={(event) => handleAreaChange(event.target.value)}
-                      required
-                    >
-                      {numberedAreas.map((area) => (
-                        <option key={area.id} value={String(area.id)}>{area.displayName}</option>
-                      ))}
-                    </select>
+                      onChange={handleAreaChange}
+                      options={numberedAreas.map((area) => ({ value: String(area.id), label: area.displayName }))}
+                    />
                   </label>
 
                   <p className={isSelectedDayOpen && isSelectedTimeOpen && !hasTimeConflict

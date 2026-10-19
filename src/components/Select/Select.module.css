@@ -1,0 +1,105 @@
+.root {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height);
+  padding: 0 14px 0 var(--control-padding-x);
+  border: 1px solid var(--input-border);
+  border-radius: var(--control-radius);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--control-font-size);
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--selection-border);
+}
+
+.trigger:focus-visible,
+.trigger[aria-expanded='true'] {
+  border-color: var(--focus-color);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.value,
+.placeholder {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: var(--text-muted);
+}
+
+.caret {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 160ms ease;
+}
+
+.caretOpen {
+  transform: rotate(180deg);
+}
+
+.list {
+  position: fixed;
+  z-index: 3000;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface-raised);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  box-sizing: border-box;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 7px;
+  color: var(--text-primary);
+  font-size: var(--control-font-size);
+  cursor: pointer;
+}
+
+.optionActive {
+  background: var(--control-hover);
+}
+
+.optionSelected {
+  background: var(--selection-bg);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.optionSelected.optionActive {
+  background: var(--selection-bg);
+}

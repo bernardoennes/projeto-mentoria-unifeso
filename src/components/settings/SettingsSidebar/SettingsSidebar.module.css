@@ -119,59 +119,8 @@
     background: var(--accent-soft-bg);
     color: var(--accent-soft-text);
   }
-
   .selectControl {
-    position: relative;
-    display: block;
     min-width: 0;
-  }
-
-  .selectControl select {
-    appearance: none;
-    width: 100%;
-    min-width: 0;
-    height: 40px;
-    padding: 0 34px 0 12px;
-    border: 1px solid var(--border-strong);
-    border-radius: 9px;
-    background: var(--surface);
-    color: var(--text-primary);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-    transition: border-color 160ms ease, background-color 160ms ease;
-  }
-
-  .selectControl select:hover {
-    border-color: var(--selection-border);
-    background: var(--surface-muted);
-  }
-
-  .selectControl select:focus-visible {
-    outline: 2px solid var(--focus-color);
-    outline-offset: 2px;
-  }
-
-  .selectIcon {
-    position: absolute;
-    top: 50%;
-    right: 11px;
-    transform: translateY(-50%);
-    color: var(--accent-soft-text);
-    pointer-events: none;
-  }
-
-  .visuallyHidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 }
 
