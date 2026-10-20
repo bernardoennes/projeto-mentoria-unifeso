@@ -1,0 +1,240 @@
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.createReservationButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: var(--nav-card-active);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+}
+
+.createReservationButton:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 5px 12px rgba(38, 48, 40, 0.16);
+  transform: translateY(-1px);
+}
+
+.createReservationButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.createReservationButton:disabled {
+  opacity: 0.62;
+  cursor: wait;
+}
+
+.loadingAreas {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.areasError {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--error-text);
+  font-size: 11px;
+}
+
+.areasError button {
+  padding: 5px 8px;
+  border: 1px solid var(--error-text);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--error-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.areasError button:hover {
+  background: var(--selection-bg);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.todayButton,
+.weekNavigator,
+.filterButton {
+  min-height: 42px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.todayButton {
+  padding: 0 17px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.todayButton:hover {
+  border-color: var(--selection-border);
+  background: var(--selection-bg);
+}
+
+.todayButton:active,
+.filterButton:active,
+.weekNavigator button:active {
+  transform: scale(0.96);
+}
+
+.weekNavigator {
+  display: grid;
+  grid-template-columns: 38px minmax(170px, 1fr) 38px;
+  align-items: center;
+  min-width: 248px;
+}
+
+.weekNavigator button,
+.filterButton {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.weekNavigator button {
+  width: 38px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.weekNavigator button:hover,
+.weekNavigator button:focus-visible {
+  border-radius: 8px;
+  background: var(--selection-bg);
+  color: var(--accent-soft-text);
+}
+
+.weekNavigator span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.filterWrap {
+  position: relative;
+}
+
+.filterButton {
+  width: 42px;
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.filterButton:hover {
+  background: var(--selection-bg);
+}
+
+.filterPopover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 7px;
+  width: 190px;
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface-raised);
+  box-shadow: 0 12px 30px rgba(38, 48, 40, 0.14);
+  color: var(--text-secondary);
+  font-size: 12px;
+  transform-origin: top right;
+  animation: calendarPopoverIn 160ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes calendarPopoverIn {
+  from { opacity: 0; transform: translateY(-5px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.todayButton:focus-visible,
+.filterButton:focus-visible,
+.createReservationButton:focus-visible {
+  outline: 2px solid var(--accent-soft-text);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterPopover {
+    animation: none;
+  }
+
+  .createReservationButton,
+  .todayButton,
+  .filterButton,
+  .weekNavigator button {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .controls {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .controls {
+    justify-content: flex-start;
+  }
+
+  .createReservationButton {
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .weekNavigator {
+    min-width: 200px;
+    grid-template-columns: 34px minmax(130px, 1fr) 34px;
+  }
+
+  .toolbar,
+  .controls {
+    gap: 6px;
+  }
+
+  .todayButton {
+    padding: 0 10px;
+  }
+}

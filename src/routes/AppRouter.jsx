@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AuthPage from '../pages/auth/AuthPage.jsx'
-import CalendarPage from '../pages/calendar/CalendarPage.jsx'
+import ReservationPage from '../pages/calendar/ReservationPage.jsx'
 import HomePage from '../pages/homepage/HomePage.jsx'
 import SettingsPage from '../pages/settings/SettingsPage.jsx'
 import { LoginRoute, ProtectedRoute } from './ProtectedRoute.jsx'
@@ -44,7 +44,7 @@ export default function AppRouter() {
         path="/reservas"
         element={
           <ProtectedRoute>
-            <CalendarPage />
+            <ReservationPage />
           </ProtectedRoute>
         }
       />

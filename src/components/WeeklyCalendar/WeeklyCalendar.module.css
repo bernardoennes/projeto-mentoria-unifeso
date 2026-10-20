@@ -1,0 +1,114 @@
+.calendarPanel {
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 4px 18px rgba(38, 48, 40, 0.04);
+}
+
+.calendarViewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  max-height: 100%;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.calendarCanvas {
+  min-width: 820px;
+  width: 100%;
+}
+
+.weekHeader,
+.calendarBody {
+  display: grid;
+  grid-template-columns: 54px repeat(7, minmax(100px, 1fr));
+}
+
+.weekHeader {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  min-height: 54px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.timeHeader {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.dayHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  border-left: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.dayHeader:hover,
+.dayHeader:focus-visible {
+  background: var(--selection-bg);
+}
+
+.dayHeader span {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.dayHeader strong {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.dayHeader.todayHeader {
+  background: var(--selection-bg);
+}
+
+.todayHeader span {
+  color: var(--accent-soft-text);
+}
+
+.todayHeader strong {
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+}
+
+.calendarBody {
+  min-height: calc(24 * 80px);
+}
+
+.timeAxis {
+  display: grid;
+  grid-template-rows: repeat(24, 80px);
+  padding-right: 6px;
+  color: var(--text-muted);
+  text-align: right;
+  font-size: 9px;
+}
+
+.timeAxis span {
+  position: relative;
+  top: 4px;
+}
+
+@media (max-width: 700px) {
+  .calendarViewport {
+    min-height: 0;
+  }
+}

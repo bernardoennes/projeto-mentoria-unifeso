@@ -1,0 +1,80 @@
+.subheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+  min-height: 78px;
+  padding: 18px 16px 18px 84px;
+  border: 0;
+  border-bottom: 1px solid var(--border-strong);
+  border-radius: 0;
+  background: var(--surface-raised);
+  box-shadow: none;
+  margin-bottom: 14px;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.copy h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(23px, 2.5vw, 32px);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.copy p {
+  margin: 7px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.backButton {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.backButton:hover {
+  filter: brightness(0.97);
+}
+
+@media (max-width: 900px) {
+  .subheader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 700px) {
+  .subheader {
+    padding: 16px 16px 16px 70px;
+  }
+
+  .backButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .copy h1 {
+    font-size: 28px;
+  }
+}

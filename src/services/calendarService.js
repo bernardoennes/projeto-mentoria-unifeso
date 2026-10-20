@@ -24,18 +24,60 @@ export function createLocalCalendarReservation(organisationId, reservation) {
   }
 
   const reservations = [...getCalendarReservations(organisationId), reservation]
+  saveCalendarReservations(organisationId, reservations)
+  return reservations
+}
 
+export function updateLocalCalendarReservation(organisationId, reservationId, updates) {
+  if (!organisationId) {
+    return []
+  }
+
+  const currentReservations = getCalendarReservations(organisationId)
+  const reservationExists = currentReservations.some((reservation) => (
+    String(reservation.id) === String(reservationId)
+  ))
+
+  if (!reservationExists) {
+    throw new Error('A reserva não foi encontrada. Atualize a agenda e tente novamente.')
+  }
+
+  const reservations = currentReservations.map((reservation) => (
+    String(reservation.id) === String(reservationId)
+      ? { ...reservation, ...updates }
+      : reservation
+  ))
+  saveCalendarReservations(organisationId, reservations)
+  return reservations
+}
+
+export function deleteLocalCalendarReservation(organisationId, reservationId) {
+  if (!organisationId) {
+    return []
+  }
+
+  const currentReservations = getCalendarReservations(organisationId)
+  const reservations = currentReservations
+    .filter((reservation) => String(reservation.id) !== String(reservationId))
+
+  if (reservations.length === currentReservations.length) {
+    throw new Error('A reserva não foi encontrada. Atualize a agenda e tente novamente.')
+  }
+
+  saveCalendarReservations(organisationId, reservations)
+  return reservations
+}
+
+function saveCalendarReservations(organisationId, reservations) {
   try {
     localStorage.setItem(getReservationsStorageKey(organisationId), JSON.stringify(reservations))
-  } catch {
-    // Keep the reservation in the current UI if browser storage is unavailable.
+  } catch (error) {
+    throw new Error('Não foi possível salvar a reserva neste navegador.', { cause: error })
   }
 
   window.dispatchEvent(new CustomEvent(RESERVATIONS_CHANGED_EVENT, {
     detail: { organisationId: String(organisationId) },
   }))
-
-  return reservations
 }
 
 export function subscribeToCalendarReservations(organisationId, onChange) {

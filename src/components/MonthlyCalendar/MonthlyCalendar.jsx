@@ -31,7 +31,11 @@ export default function MonthlyCalendar({ events = [] }) {
     endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()))
     const endOfWeekKey = getDateKey(endOfWeek)
 
-    return events.filter((event) => event.date >= todayKey && event.date <= endOfWeekKey)
+    return events.filter((event) => (
+      event.date >= todayKey
+      && event.date <= endOfWeekKey
+      && (event.type === 'holiday' || (event.type === 'reservation' && event.isEvent))
+    ))
   }, [events, selectedDate, todayKey])
 
   const changeMonth = (offset) => {
@@ -47,7 +51,7 @@ export default function MonthlyCalendar({ events = [] }) {
 
   const toggleDate = (dateKey) => {
     if (selectedDate === dateKey) {
-      navigate(`/reservas?date=${dateKey}`)
+      navigate(`/reservas?date=${dateKey}&newReservation=true`)
       return
     }
 
