@@ -4,29 +4,31 @@ import Header from '../../components/Header/Header.jsx'
 import MonthlyCalendar from '../../components/MonthlyCalendar/MonthlyCalendar.jsx'
 import Sidebar from '../../components/Sidebar/Sidebar.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
-import {
-  getCalendarReservations,
-  getNationalHolidays,
-  subscribeToCalendarReservations,
-} from '../../services/calendarService.js'
+import useCommonAreas from '../../hooks/useCommonAreas.js'
+import { fetchCalendarReservations, getNationalHolidays } from '../../services/calendarService.js'
+import { getNumberedAreas } from '../../utils/reservationUtils.js'
 import styles from './HomePage.module.css'
-
 
 export default function HomePage() {
   const { user, membership } = useAuth()
   const organisationId = membership?.organisation_id
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
-  const [reservationState, setReservationState] = useState(() => ({
-    organisationId,
-    reservations: getCalendarReservations(organisationId),
-  }))
+  const [reservationState, setReservationState] = useState({ requestKey: '', reservations: [], error: '' })
+  const [reservationRequestId, setReservationRequestId] = useState(0)
+  const commonAreas = useCommonAreas(organisationId)
+  const areas = useMemo(() => getNumberedAreas(commonAreas.areas), [commonAreas.areas])
+  const requestKey = `${organisationId ?? ''}:${areas.map((area) => area.id).join(',')}:${reservationRequestId}`
 
   const overlayClass = isSidebarExpanded ? ` ${styles.overlayVisible}` : ''
   const userName = user?.name ?? 'Morador'
   const greetingName = userName.trim().split(/\s+/)[0] || 'Morador'
-  const reservations = reservationState.organisationId === organisationId
-    ? reservationState.reservations
-    : getCalendarReservations(organisationId)
+  const reservations = useMemo(() => (
+    reservationState.requestKey === requestKey ? reservationState.reservations : []
+  ), [requestKey, reservationState])
+  const reservationsLoading = !commonAreas.error
+    && (commonAreas.isLoading || reservationState.requestKey !== requestKey)
+  const reservationsError = commonAreas.error
+    || (reservationState.requestKey === requestKey ? reservationState.error : '')
 
   const holidays = useMemo(() => [
     ...getNationalHolidays(new Date().getFullYear()),
@@ -48,10 +50,42 @@ export default function HomePage() {
   )), [holidays, reservations])
 
   useEffect(() => {
-    return subscribeToCalendarReservations(organisationId, (nextReservations) => {
-      setReservationState({ organisationId, reservations: nextReservations })
-    })
-  }, [organisationId])
+    if (commonAreas.isLoading || commonAreas.error) {
+      return undefined
+    }
+
+    let isCurrent = true
+    async function loadReservations() {
+      try {
+        const nextReservations = await fetchCalendarReservations(organisationId, areas)
+        if (isCurrent) {
+          setReservationState({ requestKey, reservations: nextReservations, error: '' })
+        }
+      } catch (error) {
+        if (isCurrent) {
+          setReservationState({
+            requestKey,
+            reservations: [],
+            error: error?.message ?? 'Não foi possível carregar as reservas.',
+          })
+        }
+      }
+    }
+
+    loadReservations()
+    return () => {
+      isCurrent = false
+    }
+  }, [organisationId, areas, commonAreas.error, commonAreas.isLoading, requestKey])
+
+  const retryReservations = () => {
+    if (commonAreas.error) {
+      commonAreas.retry()
+      return
+    }
+
+    setReservationRequestId((id) => id + 1)
+  }
 
   return (
     <div className={styles.pageShell}>
@@ -96,7 +130,13 @@ export default function HomePage() {
             </section>
 
             <div className={styles.calendarGridItem}>
-              <MonthlyCalendar events={calendarEvents} />
+              {reservationsError && !reservationsLoading && (
+                <div className={styles.calendarError} role="alert">
+                  <span>{reservationsError}</span>
+                  <button type="button" onClick={retryReservations}>Tentar novamente</button>
+                </div>
+              )}
+              <MonthlyCalendar events={calendarEvents} isLoading={reservationsLoading} />
             </div>
 
             <section className={`${styles.dashboardPanel} ${styles.occurrencesPanel}`}>

@@ -35,6 +35,7 @@ export default function NewReservationDrawer({
   isSelectedTimeOpen,
   hasTimeConflict,
   hasResidentTimeConflict,
+  isSubmitting,
   onSubmit,
 }) {
   useEffect(() => {
@@ -184,18 +185,24 @@ export default function NewReservationDrawer({
             </p>
 
             <p className={styles.localNotice}>
-              As reservas ficam salvas neste navegador, sem sincronização com o servidor.
+              A reserva será confirmada após o processamento pelo servidor.
             </p>
             <button
               className={styles.submitButton}
               type="submit"
-              disabled={!isSelectedDayOpen
+              disabled={isSubmitting
+                || !isSelectedDayOpen
                 || !isSelectedTimeOpen
                 || Boolean(hasTimeConflict)
                 || hasResidentTimeConflict}
+              aria-busy={isSubmitting}
             >
-              <Plus size={17} weight="bold" />
-              {editingReservation ? 'Salvar alterações' : 'Criar reserva'}
+              {isSubmitting ? (
+                <BrickLoader size="sm" inline />
+              ) : (
+                <Plus size={17} weight="bold" />
+              )}
+              {isSubmitting ? 'Aguarde...' : editingReservation ? 'Salvar alterações' : 'Criar reserva'}
             </button>
           </form>
         )}

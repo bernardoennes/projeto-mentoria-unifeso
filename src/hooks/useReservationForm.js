@@ -1,9 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'react-toastify'
-import {
-  createLocalCalendarReservation,
-  updateLocalCalendarReservation,
-} from '../services/calendarService.js'
+import { saveCalendarReservation } from '../services/calendarService.js'
 import {
   getAreaTimeOptions,
   getSuggestedTimes,
@@ -37,6 +34,8 @@ export default function useReservationForm({
   const [numberOfPeople, setNumberOfPeople] = useState('1')
   const [observations, setObservations] = useState('')
   const [isEvent, setIsEvent] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const submissionInProgress = useRef(false)
 
   const selectedArea = areas.find((area) => String(area.id) === selectedAreaId)
   const areaTimeRange = getAreaTimeOptions(selectedArea)
@@ -182,14 +181,21 @@ export default function useReservationForm({
     return ''
   }
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault()
+
+    if (submissionInProgress.current) {
+      return
+    }
 
     const validationError = getValidationError()
     if (validationError) {
       toast.error(validationError)
       return
     }
+
+    submissionInProgress.current = true
+    setIsSubmitting(true)
 
     const details = {
       startTime: selectedStart,
@@ -201,33 +207,35 @@ export default function useReservationForm({
       ? {
         ...editingReservation,
         ...details,
-        userId: editingReservation.userId ?? profile?.id,
-        isEvent: isSyndic ? isEvent : Boolean(editingReservation.isEvent),
       }
       : {
         ...details,
-        id: `${Date.now()}`,
         areaId: selectedArea.id,
         areaName: selectedArea.displayName,
         date: selectedDate,
         residentName: profile?.name ?? 'Você',
         userId: profile?.id,
-        isEvent: isSyndic && isEvent,
       }
 
-    let nextReservations
     try {
-      nextReservations = editingReservation
-        ? updateLocalCalendarReservation(organisationId, editingReservation.id, reservation)
-        : createLocalCalendarReservation(organisationId, reservation)
+      const savedReservation = await saveCalendarReservation({
+        organisationId,
+        reservation: editingReservation
+          ? { ...reservation, id: editingReservation.id, date: editingReservation.date }
+          : reservation,
+        area: selectedArea,
+        profile,
+        isEvent: isSyndic ? isEvent : Boolean(editingReservation?.isEvent),
+      })
+      onSaved(savedReservation)
+      toast.success(editingReservation ? 'Reserva atualizada.' : 'Reserva adicionada à agenda.')
+      close()
     } catch (error) {
       toast.error(error?.message ?? 'Não foi possível salvar a reserva.')
-      return
+    } finally {
+      submissionInProgress.current = false
+      setIsSubmitting(false)
     }
-
-    onSaved(nextReservations, reservation)
-    toast.success(editingReservation ? 'Reserva atualizada.' : 'Reserva adicionada à agenda.')
-    close()
   }
 
   return {
@@ -264,6 +272,7 @@ export default function useReservationForm({
       isSelectedTimeOpen,
       hasTimeConflict,
       hasResidentTimeConflict,
+      isSubmitting,
       onSubmit: submit,
     },
   }

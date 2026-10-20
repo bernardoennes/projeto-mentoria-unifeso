@@ -63,11 +63,14 @@ export default function ReservationPage() {
               areas={reservations.areas}
               isLoadingAreas={areasState.isLoading}
               areasError={areasState.error}
+              isLoadingReservations={areasState.reservationsLoading}
+              reservationsError={areasState.reservationsError}
               weekLabel={reservations.weekLabel}
               filterAreaId={reservations.filterAreaId}
               onFilterChange={reservations.setFilterAreaId}
               onNewReservation={form.openNew}
               onRetryAreas={areasState.retry}
+              onRetryReservations={areasState.retryReservations}
               onToday={() => reservations.selectDay(reservations.todayKey)}
               onChangeWeek={reservations.changeWeek}
             />

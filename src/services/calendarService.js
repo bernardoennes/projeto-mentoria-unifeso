@@ -1,112 +1,126 @@
-const RESERVATIONS_CHANGED_EVENT = 'condominio:reservations-changed'
+import { supabase } from '../lib/supabase.js'
+import { getRequestError } from './edgeFunctionError.js'
+import { AREA_TYPE_LABELS } from './commonAreaService.js'
 
-function getReservationsStorageKey(organisationId) {
-  return `condominio:reservations:${organisationId}`
+function formatApiTime(date, time) {
+  const dateTime = new Date(`${date}T${time}:00`)
+  const offsetMinutes = dateTime.getTimezoneOffset()
+  const sign = offsetMinutes <= 0 ? '+' : '-'
+  const absoluteOffset = Math.abs(offsetMinutes)
+  const offset = `${sign}${String(Math.floor(absoluteOffset / 60)).padStart(2, '0')}:${String(absoluteOffset % 60).padStart(2, '0')}`
+  return `${time}:00${offset}`
 }
 
-export function getCalendarReservations(organisationId) {
-  if (!organisationId) {
+function mapApiReservation(reservation, areas, profiles) {
+  const area = areas.find((item) => String(item.id) === String(reservation.reserved_area))
+  const profile = profiles.find((item) => String(item.id) === String(reservation.reserved_by))
+
+  return {
+    id: String(reservation.id),
+    areaId: String(reservation.reserved_area),
+    areaName: area?.displayName ?? AREA_TYPE_LABELS[area?.area_type] ?? 'Área comum',
+    date: String(reservation.date).slice(0, 10),
+    startTime: String(reservation.start_date).slice(0, 5),
+    endTime: String(reservation.end_date).slice(0, 5),
+    residentName: profile?.name ?? 'Morador',
+    userId: reservation.reserved_by ? String(reservation.reserved_by) : null,
+    isEvent: Boolean(reservation.is_event),
+    numberOfPeople: reservation.participants,
+    observations: reservation.observations ?? '',
+  }
+}
+
+export async function fetchCalendarReservations(organisationId, areas) {
+  if (!organisationId || areas.length === 0) {
     return []
   }
 
-  try {
-    const storedReservations = localStorage.getItem(getReservationsStorageKey(organisationId))
-    const reservations = storedReservations ? JSON.parse(storedReservations) : []
-    return Array.isArray(reservations) ? reservations : []
-  } catch {
-    return []
-  }
-}
+  const areaIds = areas.map((area) => String(area.id))
+  const { data, error } = await supabase
+    .from('reservations')
+    .select('id, reserved_by, reserved_area, date, start_date, end_date, is_event, participants, observations')
+    .eq('is_deleted', false)
+    .in('reserved_area', areaIds)
 
-export function createLocalCalendarReservation(organisationId, reservation) {
-  if (!organisationId) {
-    return []
+  if (error) {
+    throw getRequestError(error, 'Não foi possível carregar as reservas. Tente novamente.')
   }
 
-  const reservations = [...getCalendarReservations(organisationId), reservation]
-  saveCalendarReservations(organisationId, reservations)
-  return reservations
-}
+  const reservations = data ?? []
+  const userIds = [...new Set(reservations
+    .map((reservation) => reservation.reserved_by)
+    .filter(Boolean)
+    .map(String))]
+  let profiles = []
 
-export function updateLocalCalendarReservation(organisationId, reservationId, updates) {
-  if (!organisationId) {
-    return []
-  }
+  if (userIds.length > 0) {
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles_safe')
+      .select('id, name')
+      .in('id', userIds)
 
-  const currentReservations = getCalendarReservations(organisationId)
-  const reservationExists = currentReservations.some((reservation) => (
-    String(reservation.id) === String(reservationId)
-  ))
-
-  if (!reservationExists) {
-    throw new Error('A reserva não foi encontrada. Atualize a agenda e tente novamente.')
-  }
-
-  const reservations = currentReservations.map((reservation) => (
-    String(reservation.id) === String(reservationId)
-      ? { ...reservation, ...updates }
-      : reservation
-  ))
-  saveCalendarReservations(organisationId, reservations)
-  return reservations
-}
-
-export function deleteLocalCalendarReservation(organisationId, reservationId) {
-  if (!organisationId) {
-    return []
-  }
-
-  const currentReservations = getCalendarReservations(organisationId)
-  const reservations = currentReservations
-    .filter((reservation) => String(reservation.id) !== String(reservationId))
-
-  if (reservations.length === currentReservations.length) {
-    throw new Error('A reserva não foi encontrada. Atualize a agenda e tente novamente.')
-  }
-
-  saveCalendarReservations(organisationId, reservations)
-  return reservations
-}
-
-function saveCalendarReservations(organisationId, reservations) {
-  try {
-    localStorage.setItem(getReservationsStorageKey(organisationId), JSON.stringify(reservations))
-  } catch (error) {
-    throw new Error('Não foi possível salvar a reserva neste navegador.', { cause: error })
-  }
-
-  window.dispatchEvent(new CustomEvent(RESERVATIONS_CHANGED_EVENT, {
-    detail: { organisationId: String(organisationId) },
-  }))
-}
-
-export function subscribeToCalendarReservations(organisationId, onChange) {
-  if (!organisationId) {
-    return () => {}
-  }
-
-  const storageKey = getReservationsStorageKey(organisationId)
-  const handleChange = (event) => {
-    if (event.type === 'storage' && event.key !== storageKey) {
-      return
+    if (profileError) {
+      throw getRequestError(profileError, 'Não foi possível carregar os responsáveis pelas reservas.')
     }
 
-    if (
-      event.type === RESERVATIONS_CHANGED_EVENT
-      && event.detail?.organisationId !== String(organisationId)
-    ) {
-      return
-    }
-
-    onChange(getCalendarReservations(organisationId))
+    profiles = profileData ?? []
   }
 
-  window.addEventListener('storage', handleChange)
-  window.addEventListener(RESERVATIONS_CHANGED_EVENT, handleChange)
+  return reservations.map((reservation) => mapApiReservation(reservation, areas, profiles))
+}
 
-  return () => {
-    window.removeEventListener('storage', handleChange)
-    window.removeEventListener(RESERVATIONS_CHANGED_EVENT, handleChange)
+export async function saveCalendarReservation({ organisationId, reservation, area, profile, isEvent }) {
+  if (!organisationId) {
+    throw new Error('Não foi possível identificar o condomínio desta reserva.')
+  }
+
+  const isEditing = Boolean(reservation.id)
+  const body = isEditing
+    ? {
+      action: 'update',
+      id: String(reservation.id),
+      start_date: formatApiTime(reservation.date, reservation.startTime),
+      end_date: formatApiTime(reservation.date, reservation.endTime),
+      is_event: isEvent,
+      participants: reservation.numberOfPeople,
+      observations: reservation.observations,
+    }
+    : {
+      action: 'create',
+      reserved_area: String(area.id),
+      date: reservation.date,
+      start_date: formatApiTime(reservation.date, reservation.startTime),
+      end_date: formatApiTime(reservation.date, reservation.endTime),
+      is_event: isEvent,
+      participants: reservation.numberOfPeople,
+      observations: reservation.observations,
+    }
+  const { data, error } = await supabase.functions.invoke('manage-reservations', { body })
+
+  if (error) {
+    throw getRequestError(error, 'Não foi possível salvar a reserva. Tente novamente.')
+  }
+
+  if (!data?.reservation) {
+    throw new Error('A API não retornou os dados da reserva salva.')
+  }
+
+  return mapApiReservation(data.reservation, [area], [{
+    id: reservation.userId ?? profile?.id,
+    name: reservation.residentName ?? profile?.name,
+  }])
+}
+
+export async function deleteCalendarReservation(reservationId) {
+  const { error } = await supabase.functions.invoke('manage-reservations', {
+    body: {
+      action: 'delete',
+      id: String(reservationId),
+    },
+  })
+
+  if (error) {
+    throw getRequestError(error, 'Não foi possível excluir a reserva. Tente novamente.')
   }
 }
 

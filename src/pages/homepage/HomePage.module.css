@@ -79,9 +79,38 @@
 
 .calendarGridItem {
   display: flex;
+  flex-direction: column;
   min-width: 0;
   min-height: 0;
   grid-area: calendar;
+}
+
+.calendarStatus,
+.calendarError {
+  flex: 0 0 auto;
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.calendarError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--error-text);
+}
+
+.calendarError button {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid var(--error-text);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--error-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .noticesPanel {

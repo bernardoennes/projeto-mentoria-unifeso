@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { CalendarBlank } from '@phosphor-icons/react'
 import { formatDate, getDateKey } from '../../utils/calendarUtils.js'
 import DayColumn from './DayColumn/DayColumn.jsx'
@@ -15,9 +16,18 @@ export default function WeeklyCalendar({
   onSelectSlot,
   onSelectGroup,
 }) {
+  const calendarViewportRef = useRef(null)
+
+  useEffect(() => {
+    const currentHour = new Date().getHours()
+    if (calendarViewportRef.current) {
+      calendarViewportRef.current.scrollTop = currentHour * 80
+    }
+  }, [])
+
   return (
     <section className={styles.calendarPanel} aria-label="Agenda semanal">
-      <div className={styles.calendarViewport}>
+      <div className={styles.calendarViewport} ref={calendarViewportRef}>
         <div className={styles.calendarCanvas}>
           <div className={styles.weekHeader}>
             <div className={styles.timeHeader} aria-hidden="true">

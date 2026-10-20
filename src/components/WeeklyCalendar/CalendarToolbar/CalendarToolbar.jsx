@@ -8,11 +8,14 @@ export default function CalendarToolbar({
   areas,
   isLoadingAreas,
   areasError,
+  isLoadingReservations,
+  reservationsError,
   weekLabel,
   filterAreaId,
   onFilterChange,
   onNewReservation,
   onRetryAreas,
+  onRetryReservations,
   onToday,
   onChangeWeek,
 }) {
@@ -24,7 +27,7 @@ export default function CalendarToolbar({
         type="button"
         className={styles.createReservationButton}
         onClick={onNewReservation}
-        disabled={isLoadingAreas || Boolean(areasError)}
+        disabled={isLoadingAreas || Boolean(areasError) || isLoadingReservations || Boolean(reservationsError)}
       >
         <Plus size={17} weight="bold" aria-hidden="true" />
         Nova reserva
@@ -39,6 +42,18 @@ export default function CalendarToolbar({
         <div className={styles.areasError} role="alert">
           <span>{areasError}</span>
           <button type="button" onClick={onRetryAreas}>Tentar novamente</button>
+        </div>
+      )}
+      {isLoadingReservations && (
+        <span className={styles.loadingAreas} role="status">
+          <BrickLoader size="sm" inline />
+          Carregando reservas...
+        </span>
+      )}
+      {reservationsError && !isLoadingReservations && (
+        <div className={styles.areasError} role="alert">
+          <span>{reservationsError}</span>
+          <button type="button" onClick={onRetryReservations}>Tentar novamente</button>
         </div>
       )}
       <div className={styles.controls}>

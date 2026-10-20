@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
-  deleteLocalCalendarReservation,
-  getCalendarReservations,
-  subscribeToCalendarReservations,
+  deleteCalendarReservation,
+  fetchCalendarReservations,
 } from '../services/calendarService.js'
 import {
   formatDate,
@@ -32,18 +31,23 @@ export default function useReservations({ organisationId, profile, isSyndic }) {
   })
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [filterAreaId, setFilterAreaId] = useState('all')
-  const [reservationState, setReservationState] = useState(() => ({
+  const [reservationState, setReservationState] = useState({
     organisationId,
-    reservations: getCalendarReservations(organisationId),
-  }))
+    reservations: [],
+    isLoading: true,
+    error: '',
+  })
+  const [reservationRequestId, setReservationRequestId] = useState(0)
   const [selectedBookingIds, setSelectedBookingIds] = useState([])
   const [selectedBookingIndex, setSelectedBookingIndex] = useState(0)
   const [reservationToDelete, setReservationToDelete] = useState(null)
 
   const areas = useMemo(() => getNumberedAreas(commonAreas.areas), [commonAreas.areas])
-  const bookings = reservationState.organisationId === organisationId
-    ? reservationState.reservations
-    : getCalendarReservations(organisationId)
+  const bookings = useMemo(() => (
+    reservationState.organisationId === organisationId
+      ? reservationState.reservations
+      : []
+  ), [organisationId, reservationState])
   const todayKey = getDateKey(new Date())
   const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDate])
   const weekLabel = `${formatDate(weekDates[0], { day: 'numeric' })} – ${formatDate(weekDates[6], {
@@ -74,6 +78,41 @@ export default function useReservations({ organisationId, profile, isSyndic }) {
     setSelectedBookingIndex(0)
   }
 
+  useEffect(() => {
+    if (commonAreas.isLoading || commonAreas.error) {
+      return undefined
+    }
+
+    let isCurrent = true
+    async function loadReservations() {
+      try {
+        const nextReservations = await fetchCalendarReservations(organisationId, areas)
+        if (isCurrent) {
+          setReservationState({
+            organisationId,
+            reservations: nextReservations,
+            isLoading: false,
+            error: '',
+          })
+        }
+      } catch (error) {
+        if (isCurrent) {
+          setReservationState((current) => ({
+            organisationId,
+            reservations: current.organisationId === organisationId ? current.reservations : [],
+            isLoading: false,
+            error: error?.message ?? 'Não foi possível carregar as reservas.',
+          }))
+        }
+      }
+    }
+
+    loadReservations()
+    return () => {
+      isCurrent = false
+    }
+  }, [organisationId, areas, commonAreas.error, commonAreas.isLoading, reservationRequestId])
+
   const form = useReservationForm({
     organisationId,
     profile,
@@ -87,17 +126,20 @@ export default function useReservations({ organisationId, profile, isSyndic }) {
     todayKey,
     canManageBooking,
     openOnMount: shouldOpenNewReservation,
-    onSaved: (nextReservations, reservation) => {
-      setReservationState({ organisationId, reservations: nextReservations })
+    onSaved: (reservation) => {
+      setReservationState((current) => ({
+        organisationId,
+        reservations: [
+          ...(current.organisationId === organisationId ? current.reservations : [])
+            .filter((booking) => String(booking.id) !== String(reservation.id)),
+          reservation,
+        ],
+        isLoading: false,
+        error: '',
+      }))
       showBookings([reservation])
     },
   })
-
-  useEffect(() => {
-    return subscribeToCalendarReservations(organisationId, (nextReservations) => {
-      setReservationState({ organisationId, reservations: nextReservations })
-    })
-  }, [organisationId])
 
   const selectDay = (dateKey) => {
     setSelectedDate(dateKey)
@@ -136,7 +178,7 @@ export default function useReservations({ organisationId, profile, isSyndic }) {
       : groupBookings)
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!reservationToDelete) {
       return
     }
@@ -147,22 +189,46 @@ export default function useReservations({ organisationId, profile, isSyndic }) {
       return
     }
 
-    let nextReservations
     try {
-      nextReservations = deleteLocalCalendarReservation(organisationId, reservationToDelete.id)
+      await deleteCalendarReservation(reservationToDelete.id)
     } catch (error) {
       toast.error(error?.message ?? 'Não foi possível excluir a reserva.')
       return
     }
-    setReservationState({ organisationId, reservations: nextReservations })
+    setReservationState((current) => ({
+      organisationId,
+      reservations: (current.organisationId === organisationId ? current.reservations : []).filter((booking) => (
+        String(booking.id) !== String(reservationToDelete.id)
+      )),
+      isLoading: false,
+      error: '',
+    }))
     showBookings([])
     setReservationToDelete(null)
     toast.success('Reserva excluída.')
   }
 
+  const retryReservations = () => {
+    setReservationState((current) => ({
+      ...current,
+      isLoading: true,
+      error: '',
+    }))
+    setReservationRequestId((id) => id + 1)
+  }
+
   return {
     areas,
-    areasState: commonAreas,
+    areasState: {
+      ...commonAreas,
+        reservationsLoading: !commonAreas.isLoading
+          && !commonAreas.error
+          && (reservationState.organisationId !== organisationId || reservationState.isLoading),
+      reservationsError: reservationState.organisationId === organisationId
+        ? reservationState.error
+        : '',
+      retryReservations,
+    },
     form,
     weekDates,
     weekLabel,

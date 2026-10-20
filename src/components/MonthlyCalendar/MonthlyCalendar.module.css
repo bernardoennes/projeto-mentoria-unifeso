@@ -1,4 +1,5 @@
 .calendarPanel {
+  position: relative;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -9,6 +10,17 @@
   border-radius: 12px;
   background: var(--surface-raised);
   box-shadow: 0 3px 12px rgba(36, 62, 49, 0.04);
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--surface-raised) 88%, transparent);
+  cursor: wait;
 }
 
 .panelHeading {
