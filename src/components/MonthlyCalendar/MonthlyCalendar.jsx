@@ -84,7 +84,10 @@ export default function MonthlyCalendar({ events = [], isLoading = false }) {
       <div className={styles.weekdayHeader} aria-hidden="true">
         {weekdays.map((weekday) => <span key={weekday}>{weekday}</span>)}
       </div>
-      <div className={styles.monthGrid}>
+      <div
+        className={styles.monthGrid}
+        style={{ '--week-count': Math.ceil(monthCells.length / 7) }}
+      >
         {monthCells.map((date, index) => {
           if (!date) {
             return <span key={`empty-${index}`} className={styles.emptyDay} aria-hidden="true" />
