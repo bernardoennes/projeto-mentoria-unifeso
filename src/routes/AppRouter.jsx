@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AuthPage from '../pages/auth/AuthPage.jsx'
+import AnnouncementsPage from '../pages/announcements/AnnouncementsPage.jsx'
 import ReservationPage from '../pages/calendar/ReservationPage.jsx'
 import HomePage from '../pages/homepage/HomePage.jsx'
 import SettingsPage from '../pages/settings/SettingsPage.jsx'
@@ -45,6 +46,22 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <ReservationPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/avisos"
+        element={
+          <ProtectedRoute>
+            <AnnouncementsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/avisos/:noticeId"
+        element={
+          <ProtectedRoute>
+            <AnnouncementsPage />
           </ProtectedRoute>
         }
       />
