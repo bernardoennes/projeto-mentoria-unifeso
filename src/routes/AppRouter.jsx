@@ -4,6 +4,7 @@ import CalendarPage from '../pages/calendar/CalendarPage.jsx'
 import HomePage from '../pages/homepage/HomePage.jsx'
 import SettingsPage from '../pages/settings/SettingsPage.jsx'
 import { LoginRoute, ProtectedRoute } from './ProtectedRoute.jsx'
+import Tickets from '../pages/tickets/ticketpage.jsx'
 
 export default function AppRouter() {
   return (
@@ -45,6 +46,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <CalendarPage />
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path="/tickets"
+        element={
+          <ProtectedRoute>
+            <Tickets />         
           </ProtectedRoute>
         }
       />
