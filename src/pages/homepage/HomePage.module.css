@@ -79,9 +79,38 @@
 
 .calendarGridItem {
   display: flex;
+  flex-direction: column;
   min-width: 0;
   min-height: 0;
   grid-area: calendar;
+}
+
+.calendarStatus,
+.calendarError {
+  flex: 0 0 auto;
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.calendarError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--error-text);
+}
+
+.calendarError button {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid var(--error-text);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--error-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .noticesPanel {
@@ -125,6 +154,80 @@
   color: var(--text-primary);
   font-size: 17px;
   line-height: 1.25;
+}
+
+.panelTitleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.panelTitleLink:hover {
+  color: var(--link-color);
+}
+
+.noticePreview {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 10px;
+  padding: 11px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.noticePreview:hover {
+  border-color: var(--selection-border);
+}
+
+.noticePreview strong,
+.noticePreview span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noticePreview strong {
+  font-size: 12px;
+}
+
+.noticePreview span {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.noticePreview small,
+.announcementStatus {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.announcementStatus {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  margin: 0;
+  padding: 16px 6px;
+  text-align: center;
+}
+
+.viewAllNotices {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin-top: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--link-color);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.viewAllNotices:hover {
+  background: var(--surface);
 }
 
 .iconBadge {

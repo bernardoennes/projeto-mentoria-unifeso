@@ -9,7 +9,7 @@ const navItems = [
   { id: 'home', label: 'Home', iconName: 'House', path: '/' },
   { id: 'reservas', label: 'Reservas', iconName: 'CalendarCheck', path: '/reservas' },
   { id: 'chamados', label: 'Chamados', iconName: 'ChatCircleDots' },
-  { id: 'avisos', label: 'Avisos', iconName: 'Bell' },
+  { id: 'avisos', label: 'Avisos', iconName: 'Bell', path: '/avisos' },
   { id: 'pacotes', label: 'Encomendas', iconName: 'Package' },
 ]
 

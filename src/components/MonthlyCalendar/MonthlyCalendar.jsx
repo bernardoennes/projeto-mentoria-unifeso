@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CalendarBlank, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import BrickLoader from '../BrickLoader/BrickLoader.jsx'
 import { getDateKey, getDayLabel, getMonthCells, getMonthLabel } from '../../utils/calendarUtils.js'
 import styles from './MonthlyCalendar.module.css'
 
 const weekdays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
 
-export default function MonthlyCalendar({ events = [] }) {
+export default function MonthlyCalendar({ events = [], isLoading = false }) {
   const navigate = useNavigate()
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const today = new Date()
@@ -31,7 +32,11 @@ export default function MonthlyCalendar({ events = [] }) {
     endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()))
     const endOfWeekKey = getDateKey(endOfWeek)
 
-    return events.filter((event) => event.date >= todayKey && event.date <= endOfWeekKey)
+    return events.filter((event) => (
+      event.date >= todayKey
+      && event.date <= endOfWeekKey
+      && (event.type === 'holiday' || (event.type === 'reservation' && event.isEvent))
+    ))
   }, [events, selectedDate, todayKey])
 
   const changeMonth = (offset) => {
@@ -47,7 +52,7 @@ export default function MonthlyCalendar({ events = [] }) {
 
   const toggleDate = (dateKey) => {
     if (selectedDate === dateKey) {
-      navigate(`/reservas?date=${dateKey}`)
+      navigate(`/reservas?date=${dateKey}&newReservation=true`)
       return
     }
 
@@ -55,7 +60,7 @@ export default function MonthlyCalendar({ events = [] }) {
   }
 
   return (
-    <section className={styles.calendarPanel}>
+    <section className={styles.calendarPanel} aria-busy={isLoading}>
       <header className={styles.panelHeading}>
         <span className={styles.iconBadge}>
           <CalendarBlank size={17} weight="bold" color="currentColor" aria-hidden="true" />
@@ -79,7 +84,10 @@ export default function MonthlyCalendar({ events = [] }) {
       <div className={styles.weekdayHeader} aria-hidden="true">
         {weekdays.map((weekday) => <span key={weekday}>{weekday}</span>)}
       </div>
-      <div className={styles.monthGrid}>
+      <div
+        className={styles.monthGrid}
+        style={{ '--week-count': Math.ceil(monthCells.length / 7) }}
+      >
         {monthCells.map((date, index) => {
           if (!date) {
             return <span key={`empty-${index}`} className={styles.emptyDay} aria-hidden="true" />
@@ -147,6 +155,11 @@ export default function MonthlyCalendar({ events = [] }) {
           </ul>
         )}
       </div>
+      {isLoading && (
+        <div className={styles.loadingOverlay} role="status" aria-label="Carregando reservas">
+          <BrickLoader />
+        </div>
+      )}
     </section>
   )
 }

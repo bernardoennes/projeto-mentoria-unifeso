@@ -1,0 +1,87 @@
+.bookingBlock {
+  position: absolute;
+  z-index: 2;
+  left: 3px;
+  width: calc(100% - 6px);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+  padding: 5px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: left;
+  font-family: inherit;
+  pointer-events: none;
+}
+
+.selectedBooking {
+  z-index: 3;
+  outline: 2px solid var(--accent-soft-text);
+  outline-offset: 1px;
+}
+
+.bookingBlock strong,
+.bookingBlock span,
+.bookingBlock small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookingBlock .bookingArea {
+  display: -webkit-box;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: var(--booking-area-font-size, 10px);
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.bookingBlock .bookingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 3px;
+  border-top: 1px solid currentColor;
+  font-size: var(--booking-detail-font-size, 9px);
+  line-height: 1.2;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.bookingBlock .bookingInfo small {
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.mint {
+  background: #badbb8;
+  color: #1a291f;
+}
+
+.ochre {
+  background: #bf9264;
+  border-color: #9e754e;
+  color: #fff;
+}
+
+.blue {
+  background: #bfd0dc;
+  border-color: #8297a7;
+  color: #263845;
+}
+
+.eventBookingBlock {
+  background: #7a4d16;
+  border-color: #b8873e;
+  color: #fffaf0;
+  box-shadow: inset 3px 0 0 #f4c66d;
+}

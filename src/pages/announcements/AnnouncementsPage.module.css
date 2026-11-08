@@ -1,0 +1,916 @@
+.pageShell {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--app-bg);
+  color: var(--text-primary);
+}
+
+.pageBody {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: calc(100% - 60px);
+  overflow: hidden;
+}
+
+.pageBody::before {
+  position: absolute;
+  inset: 58% 0 0;
+  z-index: 0;
+  background-image: radial-gradient(var(--pattern-dot) 1px, transparent 1.2px);
+  background-size: 10px 10px;
+  opacity: 0.2;
+  content: '';
+  pointer-events: none;
+}
+
+.pageOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  padding: 0;
+  border: 0;
+  background: var(--overlay-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.overlayVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 0 18px 84px;
+}
+
+.pageSubheader {
+  flex: 0 0 auto;
+  width: calc(100% + 84px);
+  margin-right: 0;
+  margin-left: -84px;
+}
+
+.contentBody {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 16px 32px 0;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+  animation: fadeIn 420ms ease-out both;
+}
+
+.listToolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.searchField,
+.filterField {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+.searchField {
+  flex: 1 1 420px;
+  gap: 10px;
+  padding: 0 13px;
+}
+
+.searchField input,
+.filterField select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.searchField input::placeholder {
+  color: var(--text-muted);
+}
+
+.filterField {
+  flex: 0 1 210px;
+  padding: 0 12px;
+}
+
+.filterField select {
+  cursor: pointer;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.primaryButton {
+  background: var(--primary-action-bg);
+  color: var(--primary-action-text);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-action-hover);
+}
+
+.primaryButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.secondaryButton {
+  border-color: var(--border-strong);
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+.secondaryButton:hover {
+  background: var(--surface-muted);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.iconButton:focus-visible,
+.textButton:focus-visible,
+.replyButton:focus-visible,
+.commentLink:focus-visible,
+.announcementCard a:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 3px;
+}
+
+.resultsHeader,
+.cardTopline,
+.cardFooter,
+.conversationHeading,
+.postFooter,
+.composerActions,
+.dialogHeading,
+.dialogActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.resultsHeader {
+  margin-bottom: 12px;
+}
+
+.resultsHeader h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.resultsHeader > span,
+.conversationHeading > span,
+.postFooter,
+.cardFooter {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.announcementList {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.announcementCard,
+.noticePost,
+.conversation {
+  border: 1px solid var(--border-strong);
+  border-radius: 13px;
+  background: var(--surface-raised);
+  box-shadow: 0 3px 12px rgba(36, 62, 49, 0.04);
+}
+
+.announcementCard {
+  position: relative;
+  padding: 20px 22px;
+  transition: border-color 160ms ease, transform 160ms ease;
+  animation: fadeInUp 380ms ease-out both;
+}
+
+.announcementCard:hover {
+  border-color: var(--selection-border);
+  transform: translateY(-1px);
+}
+
+.cardTopline {
+  justify-content: flex-start;
+  min-height: 28px;
+}
+
+.category {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.pinnedLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.iconButton {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.deleteIconButton:hover {
+  border-color: var(--error-border-color);
+  color: var(--error-text);
+}
+
+.announcementCard h2 {
+  margin: 8px 0;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.cardOverlayLink {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.cardOverlayLink:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 3px;
+}
+
+.announcementCard .iconButton {
+  position: relative;
+  z-index: 2;
+}
+
+.cardExcerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.cardFooter {
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.commentLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.commentLink:hover {
+  color: var(--link-color);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 30px 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--surface-raised) 84%, transparent);
+  text-align: center;
+}
+
+.emptyState h2 {
+  margin: 12px 0 6px;
+  font-size: 18px;
+}
+
+.emptyState p {
+  max-width: 440px;
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.errorMessage,
+.formError {
+  color: var(--error-text);
+  font-size: 13px;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--error-border-color);
+  border-radius: 9px;
+  background: var(--danger-bg);
+}
+
+.textButton,
+.replyButton {
+  border: 0;
+  background: transparent;
+  color: var(--link-color);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.detailLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 1240px;
+  min-width: 0;
+  margin: 0 auto;
+}
+
+.detailContentBody {
+  padding-top: 24px;
+}
+
+.noticeActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.noticeActions .iconButton {
+  margin-left: 0;
+}
+
+.noticePost {
+  min-width: 0;
+  padding: 24px 26px 18px;
+}
+
+.noticePost > h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(22px, 3vw, 29px);
+  line-height: 1.25;
+}
+
+.postMeta {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.postBody {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.postImage {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 420px;
+  margin: 0 0 16px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: var(--surface-muted);
+}
+
+.postFooter {
+  justify-content: flex-start;
+  gap: 7px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.conversation {
+  padding: 20px 26px;
+}
+
+.conversationHeading {
+  justify-content: flex-start;
+  margin-bottom: 18px;
+}
+
+.conversationHeading h2 {
+  margin: 0;
+  font-size: 15px;
+  text-transform: uppercase;
+}
+
+.commentList {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.commentItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.avatar {
+  display: grid;
+  flex: 0 0 34px;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.commentContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.commentContent > strong,
+.commentMeta {
+  display: block;
+}
+
+.commentContent > strong {
+  font-size: 13px;
+}
+
+.commentMeta {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.commentContent > p {
+  margin: 8px 0 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.commentActions,
+.inlineActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.commentActions {
+  margin-top: 5px;
+}
+
+.commentActions button,
+.dangerTextButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dangerTextButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--error-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dangerTextButton:hover {
+  text-decoration: underline;
+}
+
+.commentEditForm {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.inlineActions {
+  justify-content: flex-end;
+}
+
+.inlineActions .primaryButton,
+.inlineActions .secondaryButton {
+  min-height: 34px;
+  font-size: 12px;
+}
+
+.commentContent > .commentItem {
+  margin-top: 18px;
+  margin-left: 22px;
+}
+
+.noComments {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.replyForm,
+.commentComposer {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.replyForm {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.replyForm textarea,
+.commentComposer textarea,
+.commentEditForm textarea,
+.publishForm input,
+.publishForm textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 9px;
+  outline: none;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: vertical;
+}
+
+.replyForm textarea,
+.commentComposer textarea,
+.commentEditForm textarea {
+  resize: none;
+}
+
+.characterCount,
+.fieldHint {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+  text-align: right;
+}
+
+.fieldHint {
+  text-align: left;
+}
+
+.imagePreview {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+
+.imagePreview img {
+  display: block;
+  max-width: 100%;
+  max-height: 220px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.replyForm textarea:focus,
+.commentComposer textarea:focus,
+.publishForm input:focus,
+.publishForm textarea:focus,
+.searchField:focus-within,
+.filterField:focus-within {
+  border-color: var(--focus-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-color) 24%, transparent);
+}
+
+.commentComposer {
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.commentComposer textarea {
+  padding: 2px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.composerActions {
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: var(--overlay-bg);
+}
+
+.publishDialog {
+  width: min(100%, 560px);
+  max-height: min(90vh, 760px);
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: var(--surface-raised);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.24);
+}
+
+.dialogHeading {
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.dialogHeading h2 {
+  margin: 6px 0 0;
+  font-size: 22px;
+}
+
+.publishForm,
+.publishForm label {
+  display: grid;
+  gap: 8px;
+}
+
+.publishForm {
+  gap: 16px;
+}
+
+.publishForm label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.publishForm input,
+.publishForm textarea {
+  font-weight: 400;
+}
+
+.dialogActions {
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.loadMoreSentinel {
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.contentBody > .announcementList,
+.contentBody > .detailLayout {
+  animation: fadeInUp 420ms ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 900px) {
+  .content {
+    padding-right: 0;
+  }
+
+  .pageSubheader {
+    width: calc(100% + 84px);
+    margin-right: 0;
+  }
+
+  .listToolbar {
+    flex-wrap: wrap;
+  }
+
+  .searchField {
+    flex-basis: 100%;
+  }
+
+  .filterField {
+    flex: 1 1 180px;
+  }
+}
+
+@media (max-width: 700px) {
+  .pageBody {
+    height: calc(100% - 56px);
+  }
+
+  .content {
+    padding: 0 0 12px 14px;
+  }
+
+  .content .pageSubheader {
+    width: calc(100% + 14px);
+    margin-right: 0;
+    margin-left: -14px;
+    padding-left: 16px;
+  }
+
+  .contentBody {
+    padding: 14px 14px 32px 0;
+  }
+
+  .detailContentBody {
+    padding-top: 14px;
+  }
+
+  .announcementCard,
+  .noticePost,
+  .conversation {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .announcementCard h2 {
+    font-size: 17px;
+  }
+
+  .listToolbar > .primaryButton {
+    flex: 1 1 100%;
+  }
+
+  .replyForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .replyForm > .primaryButton {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 520px) {
+  .content {
+    padding-right: 0;
+    padding-left: 12px;
+  }
+
+  .content .pageSubheader {
+    width: calc(100% + 12px);
+    margin-right: 0;
+    margin-left: -12px;
+  }
+
+  .contentBody {
+    padding-right: 12px;
+  }
+
+  .cardFooter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .composerActions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .composerActions .primaryButton {
+    align-self: flex-end;
+  }
+
+  .publishDialog {
+    padding: 18px;
+  }
+
+  .dialogActions > button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageOverlay,
+  .announcementCard,
+  .primaryButton,
+  .secondaryButton {
+    transition: none;
+  }
+
+  .contentBody,
+  .contentBody > .announcementList,
+  .contentBody > .detailLayout,
+  .announcementCard {
+    animation: none;
+  }
+}
