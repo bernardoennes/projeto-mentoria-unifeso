@@ -1,85 +1,112 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MagnifyingGlass, Plus, PencilSimple, Paperclip } from '@phosphor-icons/react'
 import Header from '../../components/Header/Header.jsx'
 import Sidebar from '../../components/Sidebar/Sidebar.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
-
-// Dados baseados no wireframe
-const initialTickets = [
-  { id: '#CH-1041', assunto: 'Vazamento na garagem do subsolo 1', solicitacao: 'Administração', categoria: 'Manutenção Predial', situacao: 'Em aberto', dataAbertura: '18/10/2026', descricao: 'Identificado vazamento de água próximo à vaga 12 do subsolo 1.' },
-  { id: '#CH-1042', assunto: 'Limpeza na piscina', solicitacao: 'Administração', categoria: 'Manutenção Predial', situacao: 'Em andamento', dataAbertura: '18/10/2026', descricao: 'Piscina precisando de aspiração e tratamento de água.' },
-  { id: '#CH-1043', assunto: 'Lâmpada queimada 3º andar', solicitacao: 'Morador', categoria: 'Solicitação', situacao: 'Resolvido', dataAbertura: '18/10/2026', descricao: 'Lâmpada do corredor em frente ao apto 302 queimada.' }
-]
+import { supabase } from '../../lib/supabase'
 
 export default function Tickets() {
   const navigate = useNavigate()
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
   const { user, membership } = useAuth()
-  
+
   const userName = user?.name ?? 'Morador'
   const accessType = membership?.access_type ?? 'Não definido'
 
-  // Estados de Filtros e Busca
-  const [tickets, setTickets] = useState(initialTickets)
+  const [tickets, setTickets] = useState([])
+  const [loading, setLoading] = useState(true)
   const [statusFiltro, setStatusFiltro] = useState('Todos')
   const [periodoFiltro, setPeriodoFiltro] = useState('30')
   const [termoBusca, setTermoBusca] = useState('')
   const [showSearchInput, setShowSearchInput] = useState(false)
 
-  // Estados dos Modais
   const [selectedTicket, setSelectedTicket] = useState(null)
   const [isNewTicketModalOpen, setIsNewTicketModalOpen] = useState(false)
 
-  // Campos do Form Novo Chamado
   const [novoAssunto, setNovoAssunto] = useState('')
   const [novaCategoria, setNovaCategoria] = useState('Manutenção Predial')
   const [novoLocal, setNovoLocal] = useState('')
   const [novaDescricao, setNovaDescricao] = useState('')
 
-  // Lógica de Filtro em tempo real
-  const ticketsFiltrados = tickets.filter(t => {
-    const combinaStatus = statusFiltro === 'Todos' || t.situacao.toLowerCase() === statusFiltro.toLowerCase()
-    const combinaBusca = t.assunto.toLowerCase().includes(termoBusca.toLowerCase()) || 
-                          t.id.toLowerCase().includes(termoBusca.toLowerCase())
-    return combinaStatus && combinaBusca
-  })
+  const fetchTickets = async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  // Ação: Criar Chamado
-  const handleCreateTicket = (e) => {
+    if (error) {
+      console.error('Erro ao buscar chamados:', error.message)
+    } else {
+      setTickets(data || [])
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchTickets()
+  }, [])
+
+  const handleCreateTicket = async (e) => {
     e.preventDefault()
     if (!novoAssunto.trim()) return
 
-    const newId = `#CH-${1040 + tickets.length + 1}`
-    const dateStr = new Date().toLocaleDateString('pt-BR')
+    const generatedCode = `#CH-${Math.floor(1000 + Math.random() * 9000)}`
 
-    const newTicket = {
-      id: newId,
+    const newTicketData = {
+      code: generatedCode,
       assunto: novoAssunto,
-      solicitacao: 'Administração',
+      solicitacao: accessType === 'morador' ? 'Morador' : 'Administração',
       categoria: novaCategoria,
+      local: novoLocal,
       situacao: 'Em aberto',
-      dataAbertura: dateStr,
       descricao: novaDescricao
     }
 
-    setTickets([newTicket, ...tickets])
-    setIsNewTicketModalOpen(false)
-    setNovoAssunto('')
-    setNovoLocal('')
-    setNovaDescricao('')
+    const { data, error } = await supabase
+      .from('tickets')
+      .insert([newTicketData])
+      .select()
+
+    if (error) {
+      alert(`Erro ao criar chamado: ${error.message}`)
+    } else if (data) {
+      setTickets([data[0], ...tickets])
+      setIsNewTicketModalOpen(false)
+      setNovoAssunto('')
+      setNovoLocal('')
+      setNovaDescricao('')
+    }
   }
 
-  // Ação: Atualizar Status
-  const handleUpdateStatus = (newStatus) => {
+  const handleUpdateStatus = async (newStatus) => {
     if (!selectedTicket) return
-    setTickets(prev => prev.map(t => t.id === selectedTicket.id ? { ...t, situacao: newStatus } : t))
-    setSelectedTicket(null)
+
+    const { error } = await supabase
+      .from('tickets')
+      .update({ situacao: newStatus })
+      .eq('id', selectedTicket.id)
+
+    if (error) {
+      alert(`Erro ao atualizar status: ${error.message}`)
+    } else {
+      setTickets(prev =>
+        prev.map(t => (t.id === selectedTicket.id ? { ...t, situacao: newStatus } : t))
+      )
+      setSelectedTicket(null)
+    }
   }
+
+  const ticketsFiltrados = tickets.filter(t => {
+    const combinaStatus = statusFiltro === 'Todos' || t.situacao?.toLowerCase() === statusFiltro.toLowerCase()
+    const combinaBusca = (t.assunto || '').toLowerCase().includes(termoBusca.toLowerCase()) ||
+                          (t.code || '').toLowerCase().includes(termoBusca.toLowerCase())
+    return combinaStatus && combinaBusca
+  })
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--app-bg)', color: 'var(--text-primary)' }}>
-      {/* 1. Barra Superior Integrada */}
       <Header
         userName={userName}
         accessType={accessType}
@@ -88,7 +115,6 @@ export default function Tickets() {
       />
 
       <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
-        {/* 2. Sidebar Lateral Integrada */}
         <Sidebar
           expanded={isSidebarExpanded}
           onExpand={() => setIsSidebarExpanded(true)}
@@ -98,7 +124,6 @@ export default function Tickets() {
           accessType={accessType}
         />
 
-        {/* 3. Conteúdo Principal */}
         <main style={{
           flex: 1,
           padding: '24px 40px',
@@ -106,7 +131,6 @@ export default function Tickets() {
           transition: 'margin-left 0.3s ease'
         }}>
           
-          {/* Voltar à visão geral */}
           <button
             onClick={() => navigate('/')}
             style={{
@@ -125,14 +149,12 @@ export default function Tickets() {
             &larr; Voltar à visão geral
           </button>
 
-          {/* Cabeçalho da Página */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
             <div>
               <h1 style={{ fontSize: '28px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>Chamados</h1>
               <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px' }}>Consulte e gerencie chamados abertos pelo responsável ou moradores.</p>
             </div>
 
-            {/* Ações (Pesquisar / Novo Chamado) */}
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               {showSearchInput ? (
                 <input
@@ -198,7 +220,6 @@ export default function Tickets() {
             </div>
           </div>
 
-          {/* Barra de Filtros */}
           <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
             <select
               value={statusFiltro}
@@ -238,7 +259,6 @@ export default function Tickets() {
             </select>
           </div>
 
-          {/* Tabela de Chamados */}
           <div style={{
             backgroundColor: 'var(--surface)',
             border: '1px solid var(--border-color)',
@@ -258,58 +278,74 @@ export default function Tickets() {
                 </tr>
               </thead>
               <tbody>
-                {ticketsFiltrados.map((ticket) => (
-                  <tr key={ticket.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '14px 16px', fontWeight: 'bold' }}>{ticket.id}</td>
-                    <td style={{ padding: '14px 16px' }}>{ticket.assunto}</td>
-                    <td style={{ padding: '14px 16px' }}>{ticket.solicitacao}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{
-                        padding: '3px 10px',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        backgroundColor: 'var(--surface-muted)',
-                        color: 'var(--text-secondary)',
-                        border: '1px solid var(--border-color)'
-                      }}>
-                        {ticket.categoria}
-                      </span>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{
-                        padding: '3px 10px',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        backgroundColor: ticket.situacao === 'Em aberto' ? 'var(--danger-bg)' : ticket.situacao === 'Em andamento' ? 'var(--accent-soft-bg)' : 'var(--accent-bg)',
-                        color: ticket.situacao === 'Em aberto' ? 'var(--danger-text)' : ticket.situacao === 'Em andamento' ? 'var(--accent-soft-text)' : 'var(--success-text)',
-                        border: `1px solid ${ticket.situacao === 'Em aberto' ? 'var(--danger-border)' : ticket.situacao === 'Em andamento' ? 'var(--border-color)' : 'var(--success-border)'}`
-                      }}>
-                        {ticket.situacao}
-                      </span>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>{ticket.dataAbertura}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                      <button
-                        onClick={() => setSelectedTicket(ticket)}
-                        title="Editar/Atender Chamado"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: 'var(--text-secondary)',
-                          padding: '4px',
-                          borderRadius: '4px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                      >
-                        <PencilSimple size={18} weight="regular" />
-                      </button>
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      Carregando chamados...
                     </td>
                   </tr>
-                ))}
+                ) : ticketsFiltrados.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      Nenhum chamado encontrado.
+                    </td>
+                  </tr>
+                ) : (
+                  ticketsFiltrados.map((ticket) => (
+                    <tr key={ticket.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '14px 16px', fontWeight: 'bold' }}>{ticket.code}</td>
+                      <td style={{ padding: '14px 16px' }}>{ticket.assunto}</td>
+                      <td style={{ padding: '14px 16px' }}>{ticket.solicitacao}</td>
+                      <td style={{ padding: '14px 16px' }}>
+                        <span style={{
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          backgroundColor: 'var(--surface-muted)',
+                          color: 'var(--text-secondary)',
+                          border: '1px solid var(--border-color)'
+                        }}>
+                          {ticket.categoria}
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 16px' }}>
+                        <span style={{
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          backgroundColor: ticket.situacao === 'Em aberto' ? 'var(--danger-bg)' : ticket.situacao === 'Em andamento' ? 'var(--accent-soft-bg)' : 'var(--accent-bg)',
+                          color: ticket.situacao === 'Em aberto' ? 'var(--danger-text)' : ticket.situacao === 'Em andamento' ? 'var(--accent-soft-text)' : 'var(--success-text)',
+                          border: `1px solid ${ticket.situacao === 'Em aberto' ? 'var(--danger-border)' : ticket.situacao === 'Em andamento' ? 'var(--border-color)' : 'var(--success-border)'}`
+                        }}>
+                          {ticket.situacao}
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 16px' }}>
+                        {new Date(ticket.created_at).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                        <button
+                          onClick={() => setSelectedTicket(ticket)}
+                          title="Editar/Atender Chamado"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: 'var(--text-secondary)',
+                            padding: '4px',
+                            borderRadius: '4px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <PencilSimple size={18} weight="regular" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -317,7 +353,6 @@ export default function Tickets() {
         </main>
       </div>
 
-      {/* Modal 1: Novo Chamado */}
       {isNewTicketModalOpen && (
         <div style={{
           position: 'fixed',
@@ -342,7 +377,6 @@ export default function Tickets() {
             overflowY: 'auto',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
           }}>
-            {/* Cabeçalho do Modal */}
             <div style={{
               padding: '20px 24px',
               borderBottom: '1px solid var(--border-color)',
@@ -380,9 +414,7 @@ export default function Tickets() {
               </button>
             </div>
 
-            {/* Formulário */}
             <form onSubmit={handleCreateTicket} style={{ padding: '24px' }}>
-              
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, color: 'var(--text-primary)' }}>
                   Dados do chamado
@@ -391,8 +423,6 @@ export default function Tickets() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                
-                {/* Assunto */}
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-primary)' }}>
                     Assunto *
@@ -416,7 +446,6 @@ export default function Tickets() {
                   />
                 </div>
 
-                {/* Categoria + Local */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-primary)' }}>
@@ -467,7 +496,6 @@ export default function Tickets() {
                   </div>
                 </div>
 
-                {/* Descrição */}
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-primary)' }}>
                     Descrição *
@@ -489,12 +517,8 @@ export default function Tickets() {
                       resize: 'vertical'
                     }}
                   />
-                  <span style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    Informe o máximo de detalhes para facilitar a análise da administração.
-                  </span>
                 </div>
 
-                {/* Anexos */}
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-primary)' }}>
                     Anexos (opcional)
@@ -538,10 +562,8 @@ export default function Tickets() {
                     </button>
                   </div>
                 </div>
-
               </div>
 
-              {/* Rodapé / Ações do Modal */}
               <div style={{
                 marginTop: '24px',
                 paddingTop: '16px',
@@ -569,10 +591,7 @@ export default function Tickets() {
                       color: 'var(--text-primary)',
                       fontSize: '13px',
                       fontWeight: '500',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+                      cursor: 'pointer'
                     }}
                   >
                     Cancelar
@@ -589,10 +608,7 @@ export default function Tickets() {
                       color: 'var(--primary-action-text)',
                       fontSize: '13px',
                       fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+                      cursor: 'pointer'
                     }}
                   >
                     Enviar chamado
@@ -605,120 +621,118 @@ export default function Tickets() {
         </div>
       )}
 
-{/* Modal 2: Detalhes / Alterar Situação */}
-{selectedTicket && (
-  <div style={{
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'var(--overlay-bg)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 9999,
-    padding: '20px'
-  }}>
-    <div style={{
-      backgroundColor: 'var(--surface-raised)',
-      border: '1px solid var(--border-strong)',
-      padding: '24px',
-      borderRadius: '12px',
-      width: '100%',
-      maxWidth: '480px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-    }}>
-      {/* Cabeçalho com botão fechar alinhado no topo */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: 'var(--text-primary)', lineHeight: '1.2' }}>
-          Gerenciar Chamado {selectedTicket.code}
-        </h2>
-        <button
-          onClick={() => setSelectedTicket(null)}
-          style={{
-            background: 'none',
-            border: 'none',
-            fontSize: '22px',
-            lineHeight: '1',
-            color: 'var(--text-muted)',
-            cursor: 'pointer',
-            padding: '2px 4px',
-            marginTop: '-2px'
-          }}
-        >
-          &times;
-        </button>
-      </div>
-
-      <p style={{ fontSize: '13px', margin: '4px 0', color: 'var(--text-primary)' }}>
-        <strong>Assunto:</strong> {selectedTicket.assunto}
-      </p>
-      <p style={{ fontSize: '13px', margin: '4px 0', color: 'var(--text-primary)' }}>
-        <strong>Solicitação:</strong> {selectedTicket.solicitacao}
-      </p>
-      <p style={{ fontSize: '13px', margin: '4px 0 12px 0', color: 'var(--text-primary)' }}>
-        <strong>Categoria:</strong> {selectedTicket.categoria}
-      </p>
-
-      <div style={{ backgroundColor: 'var(--surface-inset)', padding: '12px', borderRadius: '8px', fontSize: '13px', marginBottom: '16px', border: '1px solid var(--border-color)' }}>
-        <strong style={{ color: 'var(--text-primary)' }}>Descrição:</strong>
-        <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)' }}>{selectedTicket.descricao}</p>
-      </div>
-
-      <label style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)', display: 'block' }}>
-        Alterar Situação:
-        <select
-          value={selectedTicket.situacao}
-          onChange={(e) => handleUpdateStatus(e.target.value)}
-          style={{
+      {selectedTicket && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'var(--overlay-bg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--surface-raised)',
+            border: '1px solid var(--border-strong)',
+            padding: '24px',
+            borderRadius: '12px',
             width: '100%',
-            height: '40px',
-            padding: '0 36px 0 12px',
-            marginTop: '6px',
-            borderRadius: 'var(--control-radius, 8px)',
-            border: '1px solid var(--input-border)',
-            backgroundColor: 'var(--input-bg)',
-            color: 'var(--text-primary)',
-            fontSize: '13px',
-            fontWeight: '600',
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256'%3E%3Cpath fill='%23718078' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 12px center',
-            backgroundSize: '16px',
-            cursor: 'pointer'
-          }}
-        >
-          <option value="Em aberto">Em aberto</option>
-          <option value="Em andamento">Em andamento</option>
-          <option value="Resolvido">Resolvido</option>
-        </select>
-      </label>
+            maxWidth: '480px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: 'var(--text-primary)', lineHeight: '1.2' }}>
+                Gerenciar Chamado {selectedTicket.code}
+              </h2>
+              <button
+                onClick={() => setSelectedTicket(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '22px',
+                  lineHeight: '1',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  marginTop: '-2px'
+                }}
+              >
+                &times;
+              </button>
+            </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-        <button
-          onClick={() => setSelectedTicket(null)}
-          style={{
-            height: '38px',
-            padding: '0 20px',
-            borderRadius: 'var(--control-radius, 8px)',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'transparent',
-            color: 'var(--text-primary)',
-            fontSize: '13px',
-            fontWeight: '500',
-            cursor: 'pointer'
-          }}
-        >
-          Fechar
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <p style={{ fontSize: '13px', margin: '4px 0', color: 'var(--text-primary)' }}>
+              <strong>Assunto:</strong> {selectedTicket.assunto}
+            </p>
+            <p style={{ fontSize: '13px', margin: '4px 0', color: 'var(--text-primary)' }}>
+              <strong>Solicitação:</strong> {selectedTicket.solicitacao}
+            </p>
+            <p style={{ fontSize: '13px', margin: '4px 0 12px 0', color: 'var(--text-primary)' }}>
+              <strong>Categoria:</strong> {selectedTicket.categoria}
+            </p>
+
+            <div style={{ backgroundColor: 'var(--surface-inset)', padding: '12px', borderRadius: '8px', fontSize: '13px', marginBottom: '16px', border: '1px solid var(--border-color)' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>Descrição:</strong>
+              <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)' }}>{selectedTicket.descricao}</p>
+            </div>
+
+            <label style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)', display: 'block' }}>
+              Alterar Situação:
+              <select
+                value={selectedTicket.situacao}
+                onChange={(e) => handleUpdateStatus(e.target.value)}
+                style={{
+                  width: '100%',
+                  height: '40px',
+                  padding: '0 36px 0 12px',
+                  marginTop: '6px',
+                  borderRadius: 'var(--control-radius, 8px)',
+                  border: '1px solid var(--input-border)',
+                  backgroundColor: 'var(--input-bg)',
+                  color: 'var(--text-primary)',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'none',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256'%3E%3Cpath fill='%23718078' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 12px center',
+                  backgroundSize: '16px',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="Em aberto">Em aberto</option>
+                <option value="Em andamento">Em andamento</option>
+                <option value="Resolvido">Resolvido</option>
+              </select>
+            </label>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+              <button
+                onClick={() => setSelectedTicket(null)}
+                style={{
+                  height: '38px',
+                  padding: '0 20px',
+                  borderRadius: 'var(--control-radius, 8px)',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'transparent',
+                  color: 'var(--text-primary)',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
